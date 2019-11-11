@@ -1,0 +1,25 @@
+{% extends 'rsa.html' %}
+
+{% block head %}
+<title>TinyRSA</title>
+{% endblock %}
+
+{% block body %}
+<h1>Names</h1>
+<table>
+  <tr>
+    <th>id</th>
+    <th>name</th>
+  </tr>
+  {% for name in names %}
+    <tr>
+      <td>{{ name.id }}</td>
+      <td>{{ name.name }}</td>
+    </tr>
+  {% endfor %}
+</table>
+<form class="" action="/" method="POST">
+  <input type="text" name="name" value="">
+  <input type="submit" name="" value="submit">
+</form>
+{% endblock %}
