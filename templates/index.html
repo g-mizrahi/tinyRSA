@@ -6,6 +6,9 @@
 
 {% block body %}
 <h1>Names</h1>
+{% if names|length < 1 %}
+  <h4>Create names below</h4>
+{% else %}
 <table>
   <tr>
     <th>id</th>
@@ -15,9 +18,11 @@
     <tr>
       <td>{{ name.id }}</td>
       <td>{{ name.name }}</td>
+      <td><a href="/delete/{{ name.id }}">delete</a><br><a href="/update/{{ name.id }}">update</a></td>
     </tr>
   {% endfor %}
 </table>
+{% endif %}
 <form class="" action="/" method="POST">
   <input type="text" name="name" value="">
   <input type="submit" name="" value="submit">
