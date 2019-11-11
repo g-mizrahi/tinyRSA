@@ -9,6 +9,23 @@
 {% block body %}
 <h1>tinyRSA, Keep It Simple</h1>
 
+<p>TinyRSA is a simplified implementation of the RSA cryptosystem for learning purposes</p>
 
+<p class="mermaid">
+  sequenceDiagram
+    participant Alice
+    participant Bob
+    loop Generate Keys
+      Bob->>Bob: Public \((n,e)\) Private \((n, d)\)
+    end
+    Bob->>Alice: Public Key
+    loop Encryption
+      Alice->>Alice: \(c\equiv m^e(mod\ n)\)
+    end
+    Alice->>Bob: Cipher Text
+    loop Decryption
+      Bob->>Bob: \(c^d\equiv m (mod\ n)\)
+    end
+</p>
 
 {% endblock %}
