@@ -4,9 +4,35 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.3.1/mermaid.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     {% block head %}{% endblock %}
   </head>
   <body>
     {% block body %}{% endblock %}
+      <div class="mermaid">
+        sequenceDiagram
+          participant Alice
+          participant Bob
+          opt Generation
+            Bob->>Bob: Public and private keys
+          end
+            Alice->>Bob: hello
+      </div>
   </body>
+  <!-- sequenceDiagram
+      participant Alice
+      participant Bob
+      loop Generation
+          Bob->>Bob: Public \((n,e)\) Private \((n, d)\)
+      end
+      Bob->>Alice: Public Key
+      loop Encryption
+          Alice->>Alice: \(c\equiv m^e(mod\ n)\)
+      end
+      Alice->>Bob: Cipher Text
+      loop Decryption
+          Bob->>Bob: \(c^d\equiv m (mod\ n)\)
+    end -->
 </html>

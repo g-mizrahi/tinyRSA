@@ -31,9 +31,9 @@ class RSA_scheme(db.Model):
 #     def __repr__(self):
 #         return("<id {}\nMessage {}>".format(self.id, self.plain))
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/')#, methods=['POST', 'GET'])
 def index():
-    return(render_template("rsa.html"))
+    return(render_template("index.html"))
     # if request.method=='POST':
     #     new_name=request.form['name']
     #     new_name = Name(name=new_name)
@@ -47,28 +47,28 @@ def index():
     #     names = Name.query.order_by(Name.id).all()
     #     return(render_template("index.html", names=names))
 
-@app.route('/delete/<int:id>')
-def delete(id):
-    name_to_delete = Name.query.get_or_404(id)
-    try:
-        db.session.delete(name_to_delete)
-        db.session.commit()
-        return(redirect('/'))
-    except:
-        return("Something went wrong")
-
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-    name = Name.query.get_or_404(id)
-    if request.method=="POST":
-        name.name=request.form['name']
-        try:
-            db.session.commit()
-            return(redirect('/'))
-        except:
-            return("Something went wrong")
-    else:
-        return(render_template("update.html", name=name))
+# @app.route('/delete/<int:id>')
+# def delete(id):
+#     name_to_delete = Name.query.get_or_404(id)
+#     try:
+#         db.session.delete(name_to_delete)
+#         db.session.commit()
+#         return(redirect('/'))
+#     except:
+#         return("Something went wrong")
+#
+# @app.route('/update/<int:id>', methods=['GET', 'POST'])
+# def update(id):
+#     name = Name.query.get_or_404(id)
+#     if request.method=="POST":
+#         name.name=request.form['name']
+#         try:
+#             db.session.commit()
+#             return(redirect('/'))
+#         except:
+#             return("Something went wrong")
+#     else:
+#         return(render_template("update.html", name=name))
 
 if __name__=="__main__":
     app.run(debug=True)
