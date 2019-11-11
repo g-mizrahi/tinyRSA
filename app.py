@@ -1,5 +1,9 @@
 # Guilhem Mizrahi 11/2019
 
+# In python3 cli
+# from app import db
+# db.create_all()
+
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
@@ -29,7 +33,7 @@ class RSA_scheme(db.Model):
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    return(render_template("tinyRSA.html"))
+    return(render_template("rsa.html"))
     # if request.method=='POST':
     #     new_name=request.form['name']
     #     new_name = Name(name=new_name)
