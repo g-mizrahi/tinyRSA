@@ -4,8 +4,6 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script  src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.3.1/mermaid.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     {% block head %}{% endblock %}
   </head>
@@ -15,10 +13,11 @@
         sequenceDiagram
           participant Alice
           participant Bob
-          opt Generation
-            Bob->>Bob: Public and private keys
-          end
-            Alice->>Bob: hello
+          Bob->>Bob: Generates public and private keys
+          Bob->>Alice: Public key
+          Alice->>Alice: Encrypts message
+          Alice->>Bob: Cipher text
+          Bob->>Bob: Decrypts message
       </div>
   </body>
   <!-- sequenceDiagram
