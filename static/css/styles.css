@@ -16,5 +16,14 @@ h1{
 }
 
 #crypto{
-  display-template:
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#keys{
+  grid-column: 1/2;
+}
+
+#messages{
+  grid-column: 2/3;
 }
