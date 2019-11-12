@@ -31,21 +31,14 @@ class RSA_scheme(db.Model):
 #     def __repr__(self):
 #         return("<id {}\nMessage {}>".format(self.id, self.plain))
 
-@app.route('/')#, methods=['POST', 'GET'])
+@app.route('/', methods=['POST', 'GET'])
 def index():
-    return(render_template("index.html"))
-    # if request.method=='POST':
-    #     new_name=request.form['name']
-    #     new_name = Name(name=new_name)
-    #     try:
-    #         db.session.add(new_name)
-    #         db.session.commit()
-    #         return(redirect('/'))
-    #     except:
-    #         return("Something went wrong")
-    # else:
-    #     names = Name.query.order_by(Name.id).all()
-    #     return(render_template("index.html", names=names))
+    if request.method=='GET':
+        return(render_template("index.html"))
+    elif request.method=='POST':
+        return(render_template("index.html"))
+    else:
+        return("Something went wrong")
 
 # @app.route('/delete/<int:id>')
 # def delete(id):

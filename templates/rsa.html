@@ -9,29 +9,5 @@
   </head>
   <body>
     {% block body %}{% endblock %}
-      <div class="mermaid">
-        sequenceDiagram
-          participant Alice
-          participant Bob
-          Bob->>Bob: Generates public and private keys
-          Bob->>Alice: Public key
-          Alice->>Alice: Encrypts message
-          Alice->>Bob: Cipher text
-          Bob->>Bob: Decrypts message
-      </div>
   </body>
-  <!-- sequenceDiagram
-      participant Alice
-      participant Bob
-      loop Generation
-          Bob->>Bob: Public \((n,e)\) Private \((n, d)\)
-      end
-      Bob->>Alice: Public Key
-      loop Encryption
-          Alice->>Alice: \(c\equiv m^e(mod\ n)\)
-      end
-      Alice->>Bob: Cipher Text
-      loop Decryption
-          Bob->>Bob: \(c^d\equiv m (mod\ n)\)
-    end -->
 </html>

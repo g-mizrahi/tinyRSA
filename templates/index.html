@@ -8,6 +8,40 @@
 <h1>tinyRSA, Keep It Simple</h1>
 
 <p>TinyRSA is a simplified implementation of the RSA cryptosystem for learning purposes</p>
+
+<form action="/" method="POST">
+  <input type="submit" name="generate" value="Generate Keys">
+</form>
+<div id="crypto">
+<div id="keys">
+  {% if key|length == 0 %}
+  <ul>
+    <li>\(p=\)</li>
+    <li>\(q=\)</li>
+    <li>\(n=p\times q=\)</li>
+    <li>\(e=\)</li>
+    <li>\(d=\)</li>
+  </ul>
+  {% endif %}
+  {% if key|length == 1 %}
+  <ul>
+    <li>\(p=\) {{ key.p }}</li>
+    <li>\(q=\) {{ key.q }}</li>
+    <li>\(n=p\times q=\) {{ key.n }}</li>
+    <li>\(e=\) {{ key.e }}</li>
+    <li>\(d=\) {{ key.d }}</li>
+  </ul>
+  {% endif %}
+</div>
+<div id="messages">
+{% if key|length == 0 %}
+  Generate new keys to encrypt a message.
+{% endif %}
+
+{% if key|length == 1 %}
+
+{% endif %}
+</div>
 </div>
 
 {% endblock %}

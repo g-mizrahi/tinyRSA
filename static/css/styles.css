@@ -1,3 +1,20 @@
+html{
+  background-color: #73d2de;
+}
+
 body{
+  background-color: #eaf8fa;
+  padding:10px;
+  margin:10px auto;
+  border:solid 1px;
+  width:90%;
+}
+
+h1{
   font-family: sans-serif;
+  text-align: center;
+}
+
+#crypto{
+  display-template:
 }
