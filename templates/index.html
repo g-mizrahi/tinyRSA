@@ -38,12 +38,12 @@
   Generate new keys to encrypt a message.
 {% endif %}
 
-{% if key|length == 1 %}
-<textarea name="plain" rows="8" cols="80" form="encrypt"></textarea>
+{% if key|length == 0 %}
+<textarea name="plain" rows="8" cols="50" form="encrypt"></textarea>
   <form id="encrypt" action="/" method="POST">
     <input type="submit" name="encrypt" value="Encrypt">
   </form>
-<textarea name="cipher" rows="8" cols="80" form="decrypt"></textarea>
+<textarea name="cipher" rows="8" cols="50" form="decrypt"></textarea>
   <form id="decrypt" action="/" method="POST">
     <input type="submit" name="decrypt" value="Decrypt">
   </form>

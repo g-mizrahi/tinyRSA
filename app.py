@@ -36,7 +36,11 @@ def index():
     if request.method=='GET':
         return(render_template("index.html"))
     elif request.method=='POST':
-        return(render_template("index.html"))
+        if request.form['generate']:
+            # GENERATE THE KEYS
+            return(render_template("index.html"))
+        if request.form['encrypt']:
+            # ENCRYPT THE TEXT WARNING, WE NEED ID SO GET OTHER API END POINT
     else:
         return("Something went wrong")
 
