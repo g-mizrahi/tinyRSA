@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block body %}
-<a href="/">Home</a>
+<a href="/"><img src="{{ url_for('static', filename='images/home.svg') }}" alt="home" style="width:40px;height:40px;"></a>
 <h1>Encrypt and decrypt a message</h1>
 <div id="crypto">
 <div id="keys">
   {% if keys|length == 1 %}
+  <span><b>Keys</b></span>
   <ul>
     <li>\(p=\) {{ keys[0].p }}</li>
     <li>\(q=\) {{ keys[0].q }}</li>
@@ -19,7 +20,13 @@
   </ul>
   <p>To encrypt, the algorithm goes as follow :</p>
   <ol>
-    <li>Turn the text into numbers (for example using ASCII) and break the text into blocks.</li>
+    <li>Turn the text into numbers (for example using ASCII) and break the text into blocks. For this example, each letter contitues a block. For real applications, the length of the block is the length of the key (in bits).</li>
+    <li>Encrypt each block by doing \(c\equiv m^e(mod\ n)\) where \(m\) is the message and \(c\) is the cipher text.</li>
+  </ol>
+  <p>To decrypt, the algorithm goes as follow :</p>
+  <ol>
+    <li>Decrypt each block by doing \(m\equiv c^d(mod\ n)\) where \(m\) is the message and \(c\) is the cipher text.</li>
+    <li>Reassemble the blocks and turn the numbers into letters using the same scheme as in the encryption process (for example ASCII).</li>
   </ol>
   {% else %}
   <p>Something went wrong please go back to the home page</p>
@@ -41,5 +48,7 @@
 {% endblock %}
 
 {% block footer %}
-<p>This encryption scheme is weak with small keys, do not use for real applications.<br>Copyrights Guilhem Mizrahi 2019.</p>
+<p>This encryption scheme is weak with small keys, do not use for real applications.<br>
+Copyrights Guilhem Mizrahi 2019.</p><br>
+<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 {% endblock %}
