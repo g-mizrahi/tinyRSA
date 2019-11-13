@@ -5,21 +5,22 @@
 {% endblock %}
 
 {% block body %}
-<h1>Names</h1>
-<table>
-  <tr>
-    <th>id</th>
-    <th>name</th>
-  </tr>
-  {% for name in names %}
-    <tr>
-      <td>{{ name.id }}</td>
-      <td>{{ name.name }}</td>
-    </tr>
-  {% endfor %}
-</table>
-<form class="" action="/" method="POST">
-  <input type="text" name="name" value="">
-  <input type="submit" name="" value="submit">
-</form>
+<a href="/"><img src="{{ url_for('static', filename='images/home.svg') }}" alt="home" style="width:40px;height:40px;"></a>
+<h1>tinyRSA, Keep It Simple</h1>
+
+<p>
+    TinyRSA is a simplified implementation of the RSA cryptosystem for learning purposes.<br>
+    It implements a simplified version of RSA with small keys so that it is easier to demistify the encryption scheme.<br>
+    <b>Click on the button below to generate keys and start encrypting !</b>
+    <form action="/" method="POST">
+        <input type="submit" name="generate" value="Generate Key !">
+    </form>
+</p>
+
+{% endblock %}
+
+{% block footer %}
+<p>This encryption scheme is weak with small keys, do not use for real applications.<br>
+Copyrights Guilhem Mizrahi 2019.</p><br>
+<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 {% endblock %}

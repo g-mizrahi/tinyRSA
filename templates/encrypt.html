@@ -1,0 +1,54 @@
+{% extends 'rsa.html' %}
+
+{% block head %}
+<title>TinyRSA</title>
+{% endblock %}
+
+{% block body %}
+<a href="/"><img src="{{ url_for('static', filename='images/home.svg') }}" alt="home" style="width:40px;height:40px;"></a>
+<h1>Encrypt and decrypt a message</h1>
+<div id="crypto">
+<div id="keys">
+  {% if keys|length == 1 %}
+  <span><b>Keys</b><br>For this application, \(p\) is 19 bits long and \(q\) is 21 bits long for a 40 bits long public key \(n\).</span>
+  <ul>
+    <li>\(p=\) {{ keys[0].p }}</li>
+    <li>\(q=\) {{ keys[0].q }}</li>
+    <li>\(n=p\times q=\) {{ keys[0].n }}</li>
+    <li>\(e=\) {{ keys[0].e }}</li>
+    <li>\(d=\) {{ keys[0].d }}</li>
+  </ul>
+  <p>To encrypt, the algorithm goes as follow :</p>
+  <ol>
+    <li>Turn the text into numbers (for example using ASCII) and break the text into blocks. For this example, each letter contitues a block. For real applications, the length of the block is the length of the key (in bits).</li>
+    <li>Encrypt each block by doing \(c\equiv m^e(mod\ n)\) where \(m\) is the message and \(c\) is the cipher text.</li>
+  </ol>
+  <p>To decrypt, the algorithm goes as follow :</p>
+  <ol>
+    <li>Decrypt each block by doing \(m\equiv c^d(mod\ n)\) where \(m\) is the message and \(c\) is the cipher text.</li>
+    <li>Reassemble the blocks and turn the numbers into letters using the same scheme as in the encryption process (for example ASCII).</li>
+  </ol>
+  {% else %}
+  <p>Something went wrong please go back to the home page</p>
+  {% endif %}
+</div>
+<div id="messages">
+{% if keys|length == 1 %}
+<textarea name="plain" rows="8" cols="50" form="encrypt">{{plain}}</textarea>
+  <form id="encrypt" action="/encrypt/{{keys[0].id}}" method="POST">
+    <input type="submit" name="encrypt" value="Encrypt">
+  </form>
+<textarea name="cipher" rows="8" cols="50" form="decrypt">{{cipher}}</textarea>
+  <form id="decrypt" action="/decrypt/{{keys[0].id}}" method="POST">
+    <input type="submit" name="decrypt" value="Decrypt">
+  </form>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<p>This encryption scheme is weak with small keys, do not use for real applications.<br>
+Copyrights Guilhem Mizrahi 2019.</p><br>
+<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+{% endblock %}
