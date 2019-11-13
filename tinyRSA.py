@@ -154,8 +154,8 @@ def decrypt_message(message, exponent, modulus):
 
 def main():
     print("Generating prime numbers")
-    p=choose_prime(24)
-    q=choose_prime(24)
+    p=choose_prime(19)
+    q=choose_prime(21)
     print("(p, q) = ({}, {})".format(p, q))
     # print("Verify p, q are prime [{}|{}]".format(is_prime_slow(p), is_prime_slow(q)))
     n=p*q
@@ -164,10 +164,10 @@ def main():
     print("Public exponent\te = {}".format(e))
     d=compute_inverse(e, lcm(p-1, q-1))
     print("Private key\td = {}".format(d))
-    # message="hello world"
-    # cipher=encrypt_message(message, e, n)
-    # plain=decrypt_message(cipher, d, n)
-    # print("{} -> \n{} -> \n{}".format(message, cipher, plain))
+    message="hello world"
+    cipher=encrypt_message(message, e, n)
+    plain=decrypt_message(cipher, d, n)
+    print("{} -> \n{} -> \n{}".format(message, cipher, plain))
     return(0)
 
 if __name__=="__main__":
