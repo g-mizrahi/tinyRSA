@@ -5,7 +5,10 @@
 {% endblock %}
 
 {% block body %}
+<a href="/">Home</a>
 <h1>Encrypt and decrypt a message</h1>
+<div id="crypto">
+<div id="keys">
   {% if keys|length == 1 %}
   <ul>
     <li>\(p=\) {{ keys[0].p }}</li>
@@ -14,6 +17,10 @@
     <li>\(e=\) {{ keys[0].e }}</li>
     <li>\(d=\) {{ keys[0].d }}</li>
   </ul>
+  <p>To encrypt, the algorithm goes as follow :</p>
+  <ol>
+    <li>Turn the text into numbers (for example using ASCII) and break the text into blocks.</li>
+  </ol>
   {% else %}
   <p>Something went wrong please go back to the home page</p>
   {% endif %}

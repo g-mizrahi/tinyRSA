@@ -38,8 +38,8 @@ def index():
         return(render_template("index.html"))
     elif request.method=='POST':
         if request.form['generate']:
-            p=choose_prime(20)
-            q=choose_prime(20)
+            p=choose_prime(32)
+            q=choose_prime(32)
             n=p*q
             e=choose_exponent(n)
             d=compute_inverse(e, lcm(p-1, q-1))
@@ -62,11 +62,19 @@ def index():
 
 @app.route('/encrypt/<int:id>', methods=['POST'])
 def encrypt(id):
-    key=RSA_scheme.query.get_or_404(id)
+    key=RSA_scheme.query.filter_by(id=str(id)).all()
     message=request.form['plain']
     # ENCRYPT THE MESSAGE
-    cipher=message
+    cipher=encrypt_message(message, key[0].e, key[0].n)
     return(render_template("encrypt.html", keys=key, cipher=cipher))
+
+@app.route('/decrypt/<int:id>', methods=['POST'])
+def decrypt(id):
+    key=RSA_scheme.query.filter_by(id=str(id)).all()
+    cipher=request.form['cipher']
+    # ENCRYPT THE MESSAGE
+    message=decrypt_message(cipher, key[0].d, key[0].n)
+    return(render_template("encrypt.html", keys=key, plain=message))
 
 # @app.route('/delete/<int:id>')
 # def delete(id):

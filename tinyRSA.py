@@ -128,25 +128,46 @@ def compute_inverse(a, n):
         old_s, s=s, old_s-q*s
     return(old_s%n)
 
-def encrypt(message, exponent, modulus):
+def encrypt_message(message, exponent, modulus):
     '''
     This function encrypts the message with the public key and the exponent
-            1 -
+            1 - divide in blocks (one block per letter to avoid padding issues ?)
+            2 - encrypt each block
+            3 - join the ciphertext letters
     '''
-    return(0)
+    cipher=[]
+    for letter in message:
+        cipher.append(str(pow(ord(letter), exponent, modulus)))
+    return(', '.join(cipher))
+
+def decrypt_message(message, exponent, modulus):
+    '''
+    This function encrypts the message with the private key and the exponent
+            1 - divide in blocks (split along new line)
+            2 - decrypt each block
+            3 - join the ciphertext letters
+    '''
+    plain=[]
+    for letter in message.split(', '):
+        plain.append(chr(pow(int(letter), exponent, modulus)))
+    return(''.join(plain))
 
 def main():
     print("Generating prime numbers")
-    p=choose_prime(20)
-    q=choose_prime(20)
+    p=choose_prime(24)
+    q=choose_prime(24)
     print("(p, q) = ({}, {})".format(p, q))
-    print("Verify p, q are prime [{}|{}]".format(is_prime_slow(p), is_prime_slow(q)))
+    # print("Verify p, q are prime [{}|{}]".format(is_prime_slow(p), is_prime_slow(q)))
     n=p*q
     print("Public key \tn = {}".format(n))
     e=choose_exponent(n)
     print("Public exponent\te = {}".format(e))
     d=compute_inverse(e, lcm(p-1, q-1))
     print("Private key\td = {}".format(d))
+    # message="hello world"
+    # cipher=encrypt_message(message, e, n)
+    # plain=decrypt_message(cipher, d, n)
+    # print("{} -> \n{} -> \n{}".format(message, cipher, plain))
     return(0)
 
 if __name__=="__main__":
