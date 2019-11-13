@@ -23,15 +23,6 @@ class RSA_scheme(db.Model):
     def __repr__(self):
         return("<id {}\nPublic key {}>".format(self.id, self.n))
 
-# Maybe not necessary
-# class Message(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     plain = db.column(db.String(200))
-#     cipher = db.Column(db.String(200))
-#
-#     def __repr__(self):
-#         return("<id {}\nMessage {}>".format(self.id, self.plain))
-
 @app.route('/', methods=['POST','GET'])
 def index():
     if request.method=='GET':
@@ -53,8 +44,6 @@ def index():
                 return(render_template("encrypt.html", keys=key))
             except:
                 return("Failed at generating the keys")
-            # Generate the key and return the template with the key
-            # Redirect to the encryption page
         else:
             return("Bad form")
     else:
@@ -64,7 +53,6 @@ def index():
 def encrypt(id):
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     message=request.form['plain']
-    # ENCRYPT THE MESSAGE
     cipher=encrypt_message(message, key[0].e, key[0].n)
     return(render_template("encrypt.html", keys=key, cipher=cipher))
 
@@ -72,32 +60,8 @@ def encrypt(id):
 def decrypt(id):
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     cipher=request.form['cipher']
-    # ENCRYPT THE MESSAGE
     message=decrypt_message(cipher, key[0].d, key[0].n)
     return(render_template("encrypt.html", keys=key, plain=message))
-
-# @app.route('/delete/<int:id>')
-# def delete(id):
-#     name_to_delete = Name.query.get_or_404(id)
-#     try:
-#         db.session.delete(name_to_delete)
-#         db.session.commit()
-#         return(redirect('/'))
-#     except:
-#         return("Something went wrong")
-#
-# @app.route('/update/<int:id>', methods=['GET', 'POST'])
-# def update(id):
-#     name = Name.query.get_or_404(id)
-#     if request.method=="POST":
-#         name.name=request.form['name']
-#         try:
-#             db.session.commit()
-#             return(redirect('/'))
-#         except:
-#             return("Something went wrong")
-#     else:
-#         return(render_template("update.html", name=name))
 
 if __name__=="__main__":
     app.run(debug=True)

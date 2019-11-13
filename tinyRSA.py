@@ -1,6 +1,7 @@
 # Implement the RSA encryption and decryption algorithms
 # Implement a crack of the algorithm for small numbers
 
+# Guilhem Mizrahi 11/2019
 
 # RSA algorithm
 # 4 steps :
