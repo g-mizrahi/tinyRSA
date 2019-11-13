@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+<!-- Guilhem Mizrahi 11/2019 -->
 <a href="/"><img src="{{ url_for('static', filename='images/home.svg') }}" alt="home" style="width:40px;height:40px;"></a>
 <h1>Encrypt and decrypt a message</h1>
 <div id="crypto">
@@ -38,6 +39,7 @@
   <form id="encrypt" action="/encrypt/{{keys[0].id}}" method="POST">
     <input type="submit" name="encrypt" value="Encrypt">
   </form>
+  <p>Keep in mind that RSA encrypts numbers and outputs number that don't necessarily fall into the ASCII range so trying to print them doesn't necessarily make sense.</p>
 <textarea name="cipher" rows="8" cols="50" form="decrypt">{{cipher}}</textarea>
   <form id="decrypt" action="/decrypt/{{keys[0].id}}" method="POST">
     <input type="submit" name="decrypt" value="Decrypt">
