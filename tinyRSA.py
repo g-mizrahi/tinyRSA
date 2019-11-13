@@ -135,7 +135,6 @@ def encrypt(message, exponent, modulus):
     '''
     return(0)
 
-
 def main():
     print("Generating prime numbers")
     p=choose_prime(20)
@@ -150,20 +149,20 @@ def main():
     print("Private key\td = {}".format(d))
     return(0)
 
-def test(n):
-    # Start the clock
-    t=time.time()
-
-    p=choose_prime(n)
-    # print("p={}".format(p))
-
-    # Stop the clock and display time
-    t=time.time()-t
-    print("\ttime = {:.3f}s".format(t))
-
-    return(t)
-
 if __name__=="__main__":
+
+    def test(n):
+        # Start the clock
+        t=time.time()
+
+        p=choose_prime(n)
+        # print("p={}".format(p))
+
+        # Stop the clock and display time
+        t=time.time()-t
+        print("\ttime = {:.3f}s".format(t))
+
+        return(t)
     # t=0
     # for i in range(10):
     #     print("test {} for bit length of {}".format(i+1, 1000))

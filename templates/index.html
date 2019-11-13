@@ -7,48 +7,17 @@
 {% block body %}
 <h1>tinyRSA, Keep It Simple</h1>
 
-<p>TinyRSA is a simplified implementation of the RSA cryptosystem for learning purposes</p>
+<p>
+    TinyRSA is a simplified implementation of the RSA cryptosystem for learning purposes.<br>
+    It implements a simplified version of RSA with small keys so that it is easier to demistify the encryption scheme.<br>
+    <b>Click on the button below to generate keys and start encrypting !</b>
+    <form action="/" method="POST">
+        <input type="submit" name="generate" value="Generate Key !">
+    </form>
+</p>
 
-<form action="/" method="POST">
-  <input type="submit" name="generate" value="Generate Keys">
-</form>
-<div id="crypto">
-<div id="keys">
-  {% if key|length == 0 %}
-  <ul>
-    <li>\(p=\)</li>
-    <li>\(q=\)</li>
-    <li>\(n=p\times q=\)</li>
-    <li>\(e=\)</li>
-    <li>\(d=\)</li>
-  </ul>
-  {% endif %}
-  {% if key|length == 1 %}
-  <ul>
-    <li>\(p=\) {{ key.p }}</li>
-    <li>\(q=\) {{ key.q }}</li>
-    <li>\(n=p\times q=\) {{ key.n }}</li>
-    <li>\(e=\) {{ key.e }}</li>
-    <li>\(d=\) {{ key.d }}</li>
-  </ul>
-  {% endif %}
-</div>
-<div id="messages">
-{% if key|length == 0 %}
-  Generate new keys to encrypt a message.
-{% endif %}
+{% endblock %}
 
-{% if key|length == 0 %}
-<textarea name="plain" rows="8" cols="50" form="encrypt"></textarea>
-  <form id="encrypt" action="/" method="POST">
-    <input type="submit" name="encrypt" value="Encrypt">
-  </form>
-<textarea name="cipher" rows="8" cols="50" form="decrypt"></textarea>
-  <form id="decrypt" action="/" method="POST">
-    <input type="submit" name="decrypt" value="Decrypt">
-  </form>
-{% endif %}
-</div>
-</div>
-
+{% block footer %}
+<p>This encryption scheme is weak with small keys, do not use for real applications.<br>Copyrights Guilhem Mizrahi 2019.</p>
 {% endblock %}
