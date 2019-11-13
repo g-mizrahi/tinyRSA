@@ -38,8 +38,8 @@ def index():
         return(render_template("index.html"))
     elif request.method=='POST':
         if request.form['generate']:
-            p=choose_prime(20)
-            q=choose_prime(20)
+            p=choose_prime(19)
+            q=choose_prime(21)
             n=p*q
             e=choose_exponent(n)
             d=compute_inverse(e, lcm(p-1, q-1))
