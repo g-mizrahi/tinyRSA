@@ -15,19 +15,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///rsa.db'
 db = SQLAlchemy(app)
 
 # Create the database scheme
-# WARNING the maximum size for integers in SQLite is 2^63. Therefore 31 and 30 are the maximum bit lengths for p and q
-# Consider storing integers as strings and converting with Python
+
 class RSA_scheme(db.Model):
     '''
     This class is used to keep track of the keys so a user to encrypt and decrypt with the same key.
     Consider having a feature with accounts and store keys that belong to someone to that they can reuse them.
+    WARNING the maximum size for integers in SQLite is 2^63. Therefore 31 and 30 are the maximum bit lengths for p and q
+    Consider storing integers as strings and converting with Python
     '''
     id = db.Column(db.Integer, primary_key=True)
-    p = db.Column(db.Integer, unique=False)
-    q = db.Column(db.Integer, unique=False)
-    n = db.Column(db.Integer, unique=False)
-    e = db.Column(db.Integer, unique=False)
-    d = db.Column(db.Integer, unique=False)
+    p = db.Column(db.String(310), unique=False)
+    q = db.Column(db.String(310), unique=False)
+    n = db.Column(db.String(620), unique=False)
+    e = db.Column(db.String(10), unique=False)
+    d = db.Column(db.String(620), unique=False)
 
     def __repr__(self):
         return("<id {}\nPublic key {}>".format(self.id, self.n))
@@ -47,13 +48,13 @@ def index():
         return(render_template("index.html"))
     elif request.method=='POST':
         if request.form['generate']:
-            p=choose_prime(31)
-            q=choose_prime(30)
+            p=choose_prime(512)
+            q=choose_prime(512)
             n=p*q
             e=choose_exponent(n)
             d=compute_inverse(e, lcm(p-1, q-1))
-            new_key=RSA_scheme(p=p, q=q, n=n, e=e, d=d)
-            # return("p={}\nq={}\nn={}\ne={}\nd={}".format(p,q,n,e,d))
+            new_key=RSA_scheme(p=str(p), q=str(q), n=str(n), e=str(e), d=str(d))
+            # return("p={}\nq={}\nn={}\ne={}\nd={}".format(str(p),str(q),str(n),str(e),str(d)))
             try:
                 db.session.add(new_key)
                 db.session.commit()
@@ -75,7 +76,7 @@ def encrypt(id):
     '''
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     message=request.form['plain']
-    cipher=encrypt_message(message, key[0].e, key[0].n)
+    cipher=encrypt_message(message, int(key[0].e), int(key[0].n))
     return(render_template("encrypt.html", keys=key, cipher=cipher))
 
 # Endpoint to decrypt the content of the form
@@ -86,7 +87,7 @@ def decrypt(id):
     '''
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     cipher=request.form['cipher']
-    message=decrypt_message(cipher, key[0].d, key[0].n)
+    message=decrypt_message(cipher, int(key[0].d), int(key[0].n))
     return(render_template("encrypt.html", keys=key, plain=message))
 
 if __name__=="__main__":
