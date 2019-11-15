@@ -1,5 +1,5 @@
 # Implement the RSA encryption and decryption algorithms
-# Implement a crack of the algorithm for small numbers
+# TO DO Implement a crack of the algorithm for small numbers
 
 # Guilhem Mizrahi 11/2019
 
@@ -10,6 +10,18 @@
 #       - Key encryption
 #       - Key decryption
 # refer to https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29
+
+# TO DO
+# Backend
+#       - implement security checks, fail gracefully
+#       - better encoding, padding etc of text before encryption
+#       - better decoding of data after decryption
+# Frontend
+#       - better looking page : minimalist design
+#       - better display of keys and text
+#       - possibility to select the value of the bit length of keys
+#       - better explanation of process
+
 
 import math
 import random
@@ -158,45 +170,45 @@ def main(bitlength, debug=False):
     print("Generating prime numbers")
     p=choose_prime(bitlength)
     q=choose_prime(bitlength)
+    print("Done generating the prime numbers")
     t1=time.time()-t0
-    print("Generating prime numbers took {:.3f}s".format(t1))
-    print("(p, q) = ({}, {})".format(p, q))
-    # print("Verify p, q are prime [{}|{}]".format(is_prime_slow(p), is_prime_slow(q)))
     n=p*q
-    print("Public key \tn = {}".format(n))
     e=choose_exponent(n)
-    print("Public exponent\te = {}".format(e))
     t0=time.time()
     lowest_multiple = lcm(p-1, q-1)
-    print("lcm = {}".format(lowest_multiple))
     t2=time.time()-t0
-    print("Generating lcm took {:.3f}s".format(t2))
     t0=time.time()
     d=compute_inverse(e, lowest_multiple)
-    print("Private key\td = {}".format(d))
     t3=time.time()-t0
-    print("Generating private key took {:.3f}s".format(t3))
-    #message="hello world"
-    #cipher=encrypt_message(message, e, n)
-    #plain=decrypt_message(cipher, d, n)
-    #print("{} -> \n{} -> \n{}".format(message, cipher, plain))
-    return(0)
+    if debug:
+        print("p = {}\nq = {}".format(p, q))
+        print("Public key \tn = {}".format(n))
+        print("Public exponent\te = {}".format(e))
+        print("lcm = {}".format(lowest_multiple))
+        print("Private key\td = {}".format(d))
+        print("\nGenerating prime numbers took {:.3f}s".format(t1))
+        print("Generating lcm took {:.3f}s".format(t2))
+        print("Generating private key took {:.3f}s".format(t3))
+    return(t1+t2+t3)
 
 if __name__=="__main__":
 
-    def test(n):
+    def test(n, debug=False):
+        '''
+        Execute a function and displays the time it took
+        '''
         # Start the clock
         t=time.time()
 	
-        main(n) # we want to test the efficiency of main
+        main(n, debug) # we want to test the efficiency of main
 
         t=time.time()-t
-        print("\ntime = {:.3f}s".format(t))
+        print("\nTest for param n = {}\ttime = {:.3f}s".format(n, t))
 
         return(t)
 
     for i in range(1):
         n=1024
-        print("\nTest for bit length of {}".format(n))
-        test(n)
-    # With 1024 bits long primes (2048 bits RSA key) it takes 1.7s approx
+        test(n, True)
+    # With 1024 bits long primes (2048 bits RSA key) it takes between 1.5 and 7 seconds
+    # Almost 100% of that time is spent generating the prime numbers
