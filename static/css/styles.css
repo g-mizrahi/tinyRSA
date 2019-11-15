@@ -11,7 +11,7 @@ html{
 body{
   background-color: #eaf8fa;
   padding:10px;
-  margin:10% auto;
+  margin:5% auto;
   /* border:solid 1px; */
   width:90%;
 }
@@ -20,22 +20,30 @@ h1{
   font-family: sans-serif;
   text-align: center;
 }
+/*
+ul li{
+  width: 100%;
+} */
 
 #crypto{
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 10px;
+  grid-template-columns: 49% 49%;
+  grid-gap: 2%;
+  width: 100%;
 }
 
 #keys{
   grid-column: 1/2;
   grid-row: 1/4;
+  overflow-wrap: break-word;
+  /* width: 50%; */
 }
 
 #messages{
   grid-column: 2/3;
   grid-row: 2/3;
 }
+
 @media only screen and (max-width: 600px) {
   #crypto{
     display: grid;
