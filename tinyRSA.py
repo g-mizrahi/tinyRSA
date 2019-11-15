@@ -153,7 +153,7 @@ def decrypt_message(message, exponent, modulus):
         plain.append(chr(pow(int(letter), exponent, modulus)))
     return(''.join(plain))
 
-def main(bitlength debug=False):
+def main(bitlength, debug=False):
     t0=time.time()
     print("Generating prime numbers")
     p=choose_prime(bitlength)
@@ -196,12 +196,7 @@ if __name__=="__main__":
         return(t)
 
     for i in range(1):
-        n=30
+        n=1024
         print("\nTest for bit length of {}".format(n))
         test(n)
-
-    t=0
-    i=20
-    while t<1:
-        i+=5
-        t=test(i)
+    # With 1024 bits long primes (2048 bits RSA key) it takes 1.7s approx
