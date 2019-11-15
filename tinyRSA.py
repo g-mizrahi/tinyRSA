@@ -153,13 +153,13 @@ def decrypt_message(message, exponent, modulus):
         plain.append(chr(pow(int(letter), exponent, modulus)))
     return(''.join(plain))
 
-def main(bitlength):
+def main(bitlength debug=False):
     t0=time.time()
     print("Generating prime numbers")
     p=choose_prime(bitlength)
     q=choose_prime(bitlength)
-    t0=time.time()-t0
-    print("Generating prime numbers took {:.3f}s".format(t0))
+    t1=time.time()-t0
+    print("Generating prime numbers took {:.3f}s".format(t1))
     print("(p, q) = ({}, {})".format(p, q))
     # print("Verify p, q are prime [{}|{}]".format(is_prime_slow(p), is_prime_slow(q)))
     n=p*q
@@ -169,13 +169,13 @@ def main(bitlength):
     t0=time.time()
     lowest_multiple = lcm(p-1, q-1)
     print("lcm = {}".format(lowest_multiple))
-    t0=time.time()-t0
-    print("Generating lcm took {:.3f}s".format(t0))
+    t2=time.time()-t0
+    print("Generating lcm took {:.3f}s".format(t2))
     t0=time.time()
     d=compute_inverse(e, lowest_multiple)
     print("Private key\td = {}".format(d))
-    t0=time.time()-t0
-    print("Generating private key took {:.3f}s".format(t0))
+    t3=time.time()-t0
+    print("Generating private key took {:.3f}s".format(t3))
     #message="hello world"
     #cipher=encrypt_message(message, e, n)
     #plain=decrypt_message(cipher, d, n)
@@ -196,5 +196,12 @@ if __name__=="__main__":
         return(t)
 
     for i in range(1):
-        print("\nTest for bit length of {}".format(24))
-        test(24)
+        n=30
+        print("\nTest for bit length of {}".format(n))
+        test(n)
+
+    t=0
+    i=20
+    while t<1:
+        i+=5
+        t=test(i)
