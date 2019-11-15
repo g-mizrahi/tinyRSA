@@ -85,6 +85,8 @@ def choose_prime(l):
 def lcm(a, b):
     '''
     Returns a common multiple of a and b
+    The complexity is O(n)
+    For a better complexity we will use the gcd instead
     '''
     c=min(a, b)
     d=max(a, b)
@@ -153,22 +155,33 @@ def decrypt_message(message, exponent, modulus):
         plain.append(chr(pow(int(letter), exponent, modulus)))
     return(''.join(plain))
 
-def main():
+def main(bitlength):
+    t0=time.time()
     print("Generating prime numbers")
-    p=choose_prime(19)
-    q=choose_prime(21)
+    p=choose_prime(bitlength)
+    q=choose_prime(bitlength)
+    t0=time.time()-t0
+    print("Generating prime numbers took {:.3f}s".format(t0))
     print("(p, q) = ({}, {})".format(p, q))
     # print("Verify p, q are prime [{}|{}]".format(is_prime_slow(p), is_prime_slow(q)))
     n=p*q
     print("Public key \tn = {}".format(n))
     e=choose_exponent(n)
     print("Public exponent\te = {}".format(e))
-    d=compute_inverse(e, lcm(p-1, q-1))
+    t0=time.time()
+    lowest_multiple = lcm(p-1, q-1)
+    print("lcm = {}".format(lowest_multiple))
+    t0=time.time()-t0
+    print("Generating lcm took {:.3f}s".format(t0))
+    t0=time.time()
+    d=compute_inverse(e, lowest_multiple)
     print("Private key\td = {}".format(d))
-    message="hello world"
-    cipher=encrypt_message(message, e, n)
-    plain=decrypt_message(cipher, d, n)
-    print("{} -> \n{} -> \n{}".format(message, cipher, plain))
+    t0=time.time()-t0
+    print("Generating private key took {:.3f}s".format(t0))
+    #message="hello world"
+    #cipher=encrypt_message(message, e, n)
+    #plain=decrypt_message(cipher, d, n)
+    #print("{} -> \n{} -> \n{}".format(message, cipher, plain))
     return(0)
 
 if __name__=="__main__":
@@ -176,19 +189,14 @@ if __name__=="__main__":
     def test(n):
         # Start the clock
         t=time.time()
+	
+        main(n) # we want to test the efficiency of main
 
-        p=choose_prime(n)
-        # print("p={}".format(p))
-
-        # Stop the clock and display time
         t=time.time()-t
-        print("\ttime = {:.3f}s".format(t))
+        print("\ntime = {:.3f}s".format(t))
 
         return(t)
-    # t=0
-    # for i in range(10):
-    #     print("test {} for bit length of {}".format(i+1, 1000))
-    #     t+=test(1000)
-    # print("Average time = {:.3f}s".format(t/10))
-    main()
-    # print(compute_inverse(17, 43))
+
+    for i in range(1):
+        print("\nTest for bit length of {}".format(24))
+        test(24)
