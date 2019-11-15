@@ -4,15 +4,24 @@
 # from app import db
 # db.create_all()
 
+# imports for Flask, the Flask db handler and the tinyRSA library
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from tinyRSA import *
 
+# Initialize the app and the database (called rsa)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///rsa.db'
 db = SQLAlchemy(app)
 
+# Create the database scheme
+# WARNING the maximum size for integers in SQLite is 2^63. Therefore 31 and 30 are the maximum bit lengths for p and q
+# Consider storing integers as strings and converting with Python
 class RSA_scheme(db.Model):
+    '''
+    This class is used to keep track of the keys so a user to encrypt and decrypt with the same key.
+    Consider having a feature with accounts and store keys that belong to someone to that they can reuse them.
+    '''
     id = db.Column(db.Integer, primary_key=True)
     p = db.Column(db.Integer, unique=False)
     q = db.Column(db.Integer, unique=False)
@@ -23,14 +32,23 @@ class RSA_scheme(db.Model):
     def __repr__(self):
         return("<id {}\nPublic key {}>".format(self.id, self.n))
 
+# The default route, loads the home page
 @app.route('/', methods=['POST','GET'])
 def index():
+    '''
+    This function serves the home page
+    If the method is GET
+            then just load the default page
+    If the method is POST
+            then someone just asked to create new keys. Perform the logic and redirect
+    Security checks for request and form name.
+    '''
     if request.method=='GET':
         return(render_template("index.html"))
     elif request.method=='POST':
         if request.form['generate']:
-            p=choose_prime(50)
-            q=choose_prime(50)
+            p=choose_prime(31)
+            q=choose_prime(30)
             n=p*q
             e=choose_exponent(n)
             d=compute_inverse(e, lcm(p-1, q-1))
@@ -49,15 +67,23 @@ def index():
     else:
         return("Bad request")
 
+# Endpoint to encrypt the content of the form
 @app.route('/encrypt/<int:id>', methods=['POST'])
 def encrypt(id):
+    '''
+    This function encrypts the content of the form using the key associated with id
+    '''
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     message=request.form['plain']
     cipher=encrypt_message(message, key[0].e, key[0].n)
     return(render_template("encrypt.html", keys=key, cipher=cipher))
 
+# Endpoint to decrypt the content of the form
 @app.route('/decrypt/<int:id>', methods=['POST'])
 def decrypt(id):
+    '''
+    This function decrypts the content of the form using the keys associated with id
+    '''
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     cipher=request.form['cipher']
     message=decrypt_message(cipher, key[0].d, key[0].n)
