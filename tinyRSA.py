@@ -82,21 +82,19 @@ def choose_prime(l):
     # print("went through {} passes".format(count_passes))
     return(p)
 
+def gcd(a, b):
+    '''
+    Computes the gcd of a and b using the euclidian algorithm
+    '''
+    while b!=0:
+        a, b = b, a%b
+    return(a)
+
 def lcm(a, b):
     '''
     Returns a common multiple of a and b
-    The complexity is O(n)
-    For a better complexity we will use the gcd instead
     '''
-    c=min(a, b)
-    d=max(a, b)
-    # order a and b to optimize the search
-    e=1
-    # because the result is a multiple of both it is easier to look for it amongs the multiples of the bigger number (fewer iterations)
-    while (d*e)%c!=0:
-        e+=1
-    # print("{} is le lcm of {} and {}".format(e*d, c, d))
-    return(d*e)
+    return(a*b//gcd(a, b))
 
 def choose_exponent(n):
     '''
