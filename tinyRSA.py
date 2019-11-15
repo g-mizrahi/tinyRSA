@@ -141,17 +141,37 @@ def compute_inverse(a, n):
         old_s, s=s, old_s-q*s
     return(old_s%n)
 
-def encrypt_message(message, exponent, modulus):
+def encode_message(message, blocksize):
     '''
-    This function encrypts the message with the public key and the exponent
-            1 - divide in blocks (one block per letter to avoid padding issues ?)
-            2 - encrypt each block
-            3 - join the ciphertext letters
+    This function takes a message as input, encodes it in binary so it can be encrypted with the RSA scheme
+    Blocksize is intended to take the bit-length of the key as value to add the padding
     '''
-    cipher=[]
+    blocks=""
     for letter in message:
-        cipher.append(str(pow(ord(letter), exponent, modulus)))
-    return(', '.join(cipher))
+        blocks+="{0:08b}".format(ord(letter))
+    blocks=(blocksize-len(blocks)%blocksize)*"0"+blocks
+    return(blocks)
+
+def string_to_blocks(message, blocksize):
+    '''
+    This function takes a string as input and returns an iterator of strings of size blocksize
+    This is intended for two purposes :
+            - chunk the binary string in blocks of length len(key) for the encryption and decryption
+            - chunk the binary string in blocks of size 8 to decode in ascii
+    '''
+    for i in range(0, len(message), blocksize):
+        yield message[i: i+n]
+
+def encrypt_block(block, exponent=3, modulus=5):
+    '''
+    This function encrypts the block with the public key and the exponent
+            1 - encrypt the block with the exponent and the modulus
+            2 - return the new string
+    '''
+    plain=int(block, 2)
+    cipher=pow(plain, exponent, modulus)
+    bin_cipher=bin(cipher)[2:]
+    return(bin_cipher)
 
 def decrypt_message(message, exponent, modulus):
     '''
@@ -209,6 +229,13 @@ if __name__=="__main__":
 
     for i in range(1):
         n=1024
-        test(n, True)
+        # test(n, True)
+        message="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        n=64
+        blocks = encode_message(message, n)
+        blocks = string_to_blocks(blocks, n)
+        for block in blocks:
+            print(block)
+        # print(encrypt_block("111"))
     # With 1024 bits long primes (2048 bits RSA key) it takes between 1.5 and 7 seconds
     # Almost 100% of that time is spent generating the prime numbers
