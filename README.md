@@ -14,6 +14,6 @@ Guilhem Mizrahi
 3. Better decoding of data after decryption
 ### Frontend
 1. Better looking page : minimalist design
-2. Better display of keys and text
+2. Better display of keys and text (Don't display the numbers at first but allow to show them with a click)
 3. Possibility to select the value of the bit length of keys
 4. Better explanation of process

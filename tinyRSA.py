@@ -85,8 +85,8 @@ def choose_prime(l):
     By choosing random numbers until it has a prime
     '''
     count_passes=0
-    start=pow(2,l)+1    # we want primes larger than start
-    stop=pow(2,l+1)     # but smaller than stop
+    start=pow(2,l-1)+1    # we want primes larger than start
+    stop=pow(2,l)     # but smaller than stop
     p=start
     while not is_prime_fast(p):
         p=random.randrange(start, stop, 2)  # because primes greater than 2 are odd, we only check for odd numbers
@@ -199,7 +199,7 @@ if __name__=="__main__":
         '''
         # Start the clock
         t=time.time()
-	
+
         main(n, debug) # we want to test the efficiency of main
 
         t=time.time()-t
