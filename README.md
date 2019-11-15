@@ -9,6 +9,10 @@ RSA algorithm
     - Key encryption
     - Key decryption
 
+## Author
+
+Guilhem Mizrahi
+
 ## TO DO
 ### Backend
 1. Implement security checks, fail gracefully
