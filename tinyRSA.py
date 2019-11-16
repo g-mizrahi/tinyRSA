@@ -149,7 +149,7 @@ def encode_message(message, blocksize):
     blocks=""
     for letter in message:
         blocks+="{0:08b}".format(ord(letter))
-    blocks=(blocksize-len(blocks)%blocksize)*"0"+blocks
+    blocks+=(blocksize-len(blocks)%blocksize)*"0"
     return(blocks)
 
 def string_to_blocks(message, blocksize):
@@ -167,6 +167,7 @@ def encrypt_block(block, exponent=3, modulus=5):
     This function encrypts the block with the public key and the exponent
             1 - encrypt the block with the exponent and the modulus
             2 - return the new string
+    Figure out how to chunk the cipher block into blocks of the size of the original block and pad with zeros so that the calculations still work (prepend zeros)
     '''
     plain=int(block, 2)
     cipher=pow(plain, exponent, modulus)
