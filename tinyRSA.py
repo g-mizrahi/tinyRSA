@@ -22,6 +22,8 @@
 #       - possibility to select the value of the bit length of keys
 #       - better explanation of process
 
+# With 1024 bits long primes (2048 bits RSA key) it takes between 1.5 and 7 seconds
+# Almost 100% of that time is spent generating the prime numbers
 
 import math
 import random
@@ -84,6 +86,8 @@ def choose_prime(l):
     This function implements a monte carlo method of finding prime numbers.
     By choosing random numbers until it has a prime
     '''
+    assert is_number(l) and l>0, "Invalid bitlength"
+
     count_passes=0
     start=pow(2,l-1)+1    # we want primes larger than start
     stop=pow(2,l)     # but smaller than stop
@@ -98,6 +102,7 @@ def gcd(a, b):
     '''
     Computes the gcd of a and b using the euclidian algorithm
     '''
+    assert is_number(a) and is_number(b), "Invalid number a or b"
     while b!=0:
         a, b = b, a%b
     return(a)
@@ -106,6 +111,7 @@ def lcm(a, b):
     '''
     Returns a common multiple of a and b
     '''
+    assert is_number(a) and is_number(b), "Invalid number a or b"
     return(a*b//gcd(a, b))
 
 def choose_exponent(n):
@@ -116,6 +122,8 @@ def choose_exponent(n):
     In practice it is easier to return pow(2, 16)+1 or 3 depending on the size of n
     This implementation is satisfactory for a POC
     '''
+    assert is_number(n), "Invalid input"
+
     if n>65537:
         # in this case the value of lambda(n) is also greater that pow(2, 16) and 65537 is a valid answer
         return(65537)
@@ -129,6 +137,7 @@ def compute_inverse(a, n):
             a*x=1 (mod n)
     using the extended Euclidian algorithm
     '''
+    assert is_number(a) and is_number(n), "Invalid number a or n"
     # Initialize the variables to define the sequence
     old_s=1
     s=0
@@ -146,11 +155,16 @@ def encode_message(message, blocksize):
     This function takes a message as input, encodes it in binary so it can be encrypted with the RSA scheme
     Blocksize is intended to take the bit-length of the key as value to add the padding
     '''
+    try:
+        message=str(message) # make sure the message is a string
+    except:
+        raise AssertionError("Invalid input, message cannot be converted to string")
+    assert is_number(blocksize), "Invalid number blocksize"
     blocks=""
     for letter in message:
-        blocks+="{0:08b}".format(ord(letter))
-    blocks+=(blocksize-len(blocks)%blocksize)*"0"
-    return(blocks)
+        blocks+="{0:08b}".format(ord(letter)) # displays the ascii code as a 8 bits long binary integer
+    blocks=blocks+(blocksize-len(blocks)%blocksize)*"0" # pad the blocks to reach the end of the blocksize
+    return(blocks) # This returns a long string, it is intended to be chunked into blocks
 
 def string_to_blocks(message, blocksize):
     '''
@@ -159,84 +173,115 @@ def string_to_blocks(message, blocksize):
             - chunk the binary string in blocks of length len(key) for the encryption and decryption
             - chunk the binary string in blocks of size 8 to decode in ascii
     '''
+    assert is_number(blocksize), "Invalid argument blocksize must be an integer"
     for i in range(0, len(message), blocksize):
-        yield message[i: i+n]
+        yield message[i: i+blocksize]
 
-def encrypt_block(block, exponent=3, modulus=5):
+def crypt_block(block, exponent, modulus):
     '''
     This function encrypts the block with the public key and the exponent
             1 - encrypt the block with the exponent and the modulus
             2 - return the new string
     Figure out how to chunk the cipher block into blocks of the size of the original block and pad with zeros so that the calculations still work (prepend zeros)
+    The decryption uses the same algorithm with a different value of exponent
     '''
-    plain=int(block, 2)
+    try:
+        plain=int(block, 2)
+    except:
+        raise AssertionError("Block could not be converted to an int")
+    blocksize=len(block)
     cipher=pow(plain, exponent, modulus)
     bin_cipher=bin(cipher)[2:]
+    bin_cipher+="0"*(blocksize-len(bin_cipher)%blocksize) # append some zeros to return a block of length multiple of the original block (with same binary value)
     return(bin_cipher)
 
-def decrypt_message(message, exponent, modulus):
+def display_bin_block(bin_message):
     '''
-    This function encrypts the message with the private key and the exponent
-            1 - divide in blocks (split along new line)
-            2 - decrypt each block
-            3 - join the ciphertext letters
+    This function returns the string in ascii code that corresponds to the binary message in input.
     '''
-    plain=[]
-    for letter in message.split(', '):
-        plain.append(chr(pow(int(letter), exponent, modulus)))
-    return(''.join(plain))
+    bin_chars=string_to_blocks(bin_message, 8)
+    message=""
+    for bin_char in bin_chars:
+        message+=chr(int(bin_char, 2))
+    return(message)
 
-def main(bitlength, debug=False):
+# def decrypt_message(message, exponent, modulus):
+#     '''
+#     This function encrypts the message with the private key and the exponent
+#             1 - divide in blocks (split along new line)
+#             2 - decrypt each block
+#             3 - join the ciphertext letters
+#     '''
+#     plain=[]
+#     for letter in message.split(', '):
+#         plain.append(chr(pow(int(letter), exponent, modulus)))
+#     return(''.join(plain))
+
+def main(bitlength, message, debug=False):
     t0=time.time()
     print("Generating prime numbers")
     p=choose_prime(bitlength)
     q=choose_prime(bitlength)
     print("Done generating the prime numbers")
-    t1=time.time()-t0
+    t1=time.time()-t0 # time taken to generate the prime numbers
     n=p*q
-    e=choose_exponent(n)
+    e=choose_exponent(n) # we don't need to measure the time, because of the implementation we know it is O(1)
     t0=time.time()
     lowest_multiple = lcm(p-1, q-1)
-    t2=time.time()-t0
+    t2=time.time()-t0 # time taken to compute the lcm (used to be long with a naive method)
     t0=time.time()
     d=compute_inverse(e, lowest_multiple)
-    t3=time.time()-t0
+    t3=time.time()-t0 # time taken to compute the inverse
+    t0=time.time()
+    bin_message=encode_message(message, n) # message encoded in binary
+    bin_blocks=string_to_blocks(bin_message, n) # generator with the blocks to encode separately (in this case probably just one block)
+    t4=time.time()-t0 # time taken to encode the message
+    t0=time.time()
+    bin_cipher=""
+    for bin_block in bin_blocks: # Treat each block separately
+        bin_cipher+=crypt_block(bin_block, e, n) # encrypt each block
+    t5=time.time()-t0 # time taken to encrypt the message
+    cipher=display_bin_block(bin_cipher) # Convert back to ascii
+
     if debug:
-        print("p = {}\nq = {}".format(p, q))
-        print("Public key \tn = {}".format(n))
-        print("Public exponent\te = {}".format(e))
-        print("lcm = {}".format(lowest_multiple))
-        print("Private key\td = {}".format(d))
-        print("\nGenerating prime numbers took {:.3f}s".format(t1))
-        print("Generating lcm took {:.3f}s".format(t2))
-        print("Generating private key took {:.3f}s".format(t3))
+        print("#"*30)
+        print("p = [{}]\nq = [{}]".format(p, q))
+        print("Public key \tn = [{}]".format(n))
+        print("Public exponent\te = [{}]".format(e))
+        print("lcm = [{}]".format(lowest_multiple))
+        print("Private key\td = [{}]".format(d))
+        print("#"*30)
+        print("Original message = [{}]".format(message))
+        print("Encrypted binary message = [{}]".format(bin_cipher))
+        print("Encrypted message = [{}]".format(cipher))
+        print("#"*30)
+        print("Generating prime numbers took [{:.3f}]s".format(t1))
+        print("Generating lcm took [{:.3f}]s".format(t2))
+        print("Generating private key took [{:.3f}]s".format(t3))
+        print("Encoding message took [{:.3f}]s".format(t4))
+        print("Encrypting message took [{:.3f}]s".format(t5))
     return(t1+t2+t3)
 
 if __name__=="__main__":
 
-    def test(n, debug=False):
+    def test(n, message, debug=False):
         '''
         Execute a function and displays the time it took
         '''
         # Start the clock
         t=time.time()
 
-        main(n, debug) # we want to test the efficiency of main
+        main(n, message, debug) # we want to test the efficiency of main
 
         t=time.time()-t
         print("\nTest for param n = {}\ttime = {:.3f}s".format(n, t))
 
         return(t)
 
-    for i in range(1):
-        n=1024
-        # test(n, True)
-        message="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-        n=64
-        blocks = encode_message(message, n)
-        blocks = string_to_blocks(blocks, n)
-        for block in blocks:
-            print(block)
-        # print(encrypt_block("111"))
-    # With 1024 bits long primes (2048 bits RSA key) it takes between 1.5 and 7 seconds
-    # Almost 100% of that time is spent generating the prime numbers
+    n=512 # bitlength of the key
+    message="Hello world!" # message to encrypt
+    debug=True # activate the debug traces
+
+    # test(n, message, debug)
+
+    # cannot fit 'int' into an index-sized integer
