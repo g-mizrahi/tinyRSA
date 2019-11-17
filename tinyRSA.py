@@ -89,11 +89,11 @@ def choose_prime(l):
     assert is_number(l) and l>0, "Invalid bitlength"
 
     count_passes=0
-    start=pow(2,l-1)+1    # we want primes larger than start
-    stop=pow(2,l)     # but smaller than stop
+    start=pow(2,l-1)+1  # we want primes larger than start and only odd numbers (hence the +1)
+    stop=pow(2,l)       # but smaller than stop
     p=start
     while not is_prime_fast(p):
-        p=random.randrange(start, stop, 2)  # because primes greater than 2 are odd, we only check for odd numbers
+        p=random.randrange(start, stop, 2)  # because primes greater than 2 are odd, we only check for odd numbers (hence step=2)
         count_passes+=1
     # print("went through {} passes".format(count_passes))
     return(p)
@@ -218,6 +218,9 @@ def display_bin_block(bin_message):
 #     return(''.join(plain))
 
 def main(bitlength, message, debug=False):
+
+# Generation of keys
+
     t0=time.time()
     print("Generating prime numbers")
     p=choose_prime(bitlength)
@@ -232,9 +235,12 @@ def main(bitlength, message, debug=False):
     t0=time.time()
     d=compute_inverse(e, lowest_multiple)
     t3=time.time()-t0 # time taken to compute the inverse
+
+# Encryption
+
     t0=time.time()
-    bin_message=encode_message(message, n) # message encoded in binary
-    bin_blocks=string_to_blocks(bin_message, n) # generator with the blocks to encode separately (in this case probably just one block)
+    bin_message=encode_message(message, 2*bitlength) # message encoded in binary
+    bin_blocks=string_to_blocks(bin_message, 2*bitlength) # generator with the blocks to encode separately (in this case probably just one block)
     t4=time.time()-t0 # time taken to encode the message
     t0=time.time()
     bin_cipher=""
@@ -243,24 +249,35 @@ def main(bitlength, message, debug=False):
     t5=time.time()-t0 # time taken to encrypt the message
     cipher=display_bin_block(bin_cipher) # Convert back to ascii
 
+# Decryption
+
+    bin_cipher_blocks=string_to_blocks(bin_cipher, 2*bitlength) # Chunk the encrypted binary string in blocks
+    t0=time.time()
+    bin_plain=""
+    for bin_block in bin_cipher_blocks:
+        bin_plain+=crypt_block(bin_block, d, n)
+    t6=time.time()-t0
+    plain=display_bin_block(bin_plain)
+
     if debug:
-        print("#"*30)
-        print("p = [{}]\nq = [{}]".format(p, q))
-        print("Public key \tn = [{}]".format(n))
-        print("Public exponent\te = [{}]".format(e))
-        print("lcm = [{}]".format(lowest_multiple))
-        print("Private key\td = [{}]".format(d))
-        print("#"*30)
-        print("Original message = [{}]".format(message))
-        print("Encrypted binary message = [{}]".format(bin_cipher))
-        print("Encrypted message = [{}]".format(cipher))
-        print("#"*30)
+        print("")
+        print("p = [{}]\nq = [{}]\n".format(p, q))
+        print("Public key \tn = [{}]\n".format(n))
+        print("Public exponent\te = [{}]\n".format(e))
+        print("lcm = [{}]\n".format(lowest_multiple))
+        print("Private key\td = [{}]\n".format(d))
+        print("Original message = [{}]\n".format(message))
+        # print("Encrypted binary message = [{}]\n".format(bin_cipher))
+        print("Encrypted message = [{}]\n".format(cipher))
+        # print("Decrypted binary message = [{}]\n".format(bin_plain))
+        print("Decrypted message = [{}]\n".format(plain))
         print("Generating prime numbers took [{:.3f}]s".format(t1))
-        print("Generating lcm took [{:.3f}]s".format(t2))
-        print("Generating private key took [{:.3f}]s".format(t3))
-        print("Encoding message took [{:.3f}]s".format(t4))
-        print("Encrypting message took [{:.3f}]s".format(t5))
-    return(t1+t2+t3)
+        # print("Generating lcm took [{:.3f}]s".format(t2))
+        # print("Generating private key took [{:.3f}]s".format(t3))
+        # print("Encoding message took [{:.3f}]s".format(t4))
+        # print("Encrypting message took [{:.3f}]s".format(t5))
+        # print("Decrypting message took [{:.3f}]s".format(t6))
+    return(t1+t2+t3+t4+t5+t6)
 
 if __name__=="__main__":
 
@@ -282,6 +299,10 @@ if __name__=="__main__":
     message="Hello world!" # message to encrypt
     debug=True # activate the debug traces
 
-    # test(n, message, debug)
-
-    # cannot fit 'int' into an index-sized integer
+    total_time=test(n, message, debug)
+    #
+    # pubkey =  88048172210701252338959188750383622595097395288261062793500603004470953510687203545397946025878779767092339296203186795673830863642904792107319396180158297960320654696018165053448424982635801581963660561705775340453448516464064812300960667602848007017918947498368526536440990568888492596882793728614269185083
+    #
+    # exponent = 65537
+    #
+    # privkey = 13779484539711268361605427764748304395175495289287724347186153389922583192431196166491814294435596757269673283664311539585709541983207241714584454383352814260081607795479697516159951819779333925978658150358550508143115280692886395707481797894819684845785195060625469622605975130713666752353891008214163345949
