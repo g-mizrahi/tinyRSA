@@ -163,7 +163,8 @@ def encode_message(message, blocksize):
     blocks=""
     for letter in message:
         blocks+="{0:08b}".format(ord(letter)) # displays the ascii code as a 8 bits long binary integer
-    blocks=blocks+(blocksize-len(blocks)%blocksize)*"0" # pad the blocks to reach the end of the blocksize
+    if len(blocks)%blocksize>0:
+        blocks=(blocksize-len(blocks)%blocksize)*"0"+blocks # pad the blocks to reach the end of the blocksize
     return(blocks) # This returns a long string, it is intended to be chunked into blocks
 
 def string_to_blocks(message, blocksize):
@@ -192,7 +193,8 @@ def crypt_block(block, exponent, modulus):
     blocksize=len(block)
     cipher=pow(plain, exponent, modulus)
     bin_cipher=bin(cipher)[2:]
-    bin_cipher+="0"*(blocksize-len(bin_cipher)%blocksize) # append some zeros to return a block of length multiple of the original block (with same binary value)
+    if len(bin_cipher)%blocksize>0:
+        bin_cipher="0"*(blocksize-len(bin_cipher)%blocksize)+bin_cipher # append some zeros to return a block of length multiple of the original block (with same binary value)
     return(bin_cipher)
 
 def display_bin_block(bin_message):
@@ -234,7 +236,9 @@ def main(bitlength, message, debug=False):
     t2=time.time()-t0 # time taken to compute the lcm (used to be long with a naive method)
     t0=time.time()
     d=compute_inverse(e, lowest_multiple)
-    print("Is inverse = {}".format((e*d)%lowest_multiple))
+    # print("Is multiple = {}\t{}".format(lowest_multiple%(p-1), lowest_multiple%(q-1)))
+    # print("Is inverse = {}".format((e*d)%lowest_multiple))
+    # print("e and lambda(n) coprime = {}".format(gcd(lowest_multiple,e)))
     t3=time.time()-t0 # time taken to compute the inverse
 
 # Encryption
@@ -296,9 +300,9 @@ if __name__=="__main__":
 
         return(t)
 
-    bitlength=512 # bitlength of the key
-    message="Hello world!" # message to encrypt
-    debug=False # activate the debug traces
+    bitlength=4 # bitlength of the key
+    message="11" # message to encrypt
+    debug=True # activate the debug traces
 
     # print(compute_inverse(7, 15))
 
