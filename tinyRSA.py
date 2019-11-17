@@ -234,6 +234,7 @@ def main(bitlength, message, debug=False):
     t2=time.time()-t0 # time taken to compute the lcm (used to be long with a naive method)
     t0=time.time()
     d=compute_inverse(e, lowest_multiple)
+    print("IS INVERSE ? = {}".format(e*d%n))
     t3=time.time()-t0 # time taken to compute the inverse
 
 # Encryption
@@ -267,9 +268,9 @@ def main(bitlength, message, debug=False):
         print("lcm = [{}]\n".format(lowest_multiple))
         print("Private key\td = [{}]\n".format(d))
         print("Original message = [{}]\n".format(message))
-        # print("Encrypted binary message = [{}]\n".format(bin_cipher))
+        print("Encrypted binary message = [{}]\n".format(bin_cipher))
         print("Encrypted message = [{}]\n".format(cipher))
-        # print("Decrypted binary message = [{}]\n".format(bin_plain))
+        print("Decrypted binary message = [{}]\n".format(bin_plain))
         print("Decrypted message = [{}]\n".format(plain))
         print("Generating prime numbers took [{:.3f}]s".format(t1))
         # print("Generating lcm took [{:.3f}]s".format(t2))
@@ -295,14 +296,25 @@ if __name__=="__main__":
 
         return(t)
 
-    n=512 # bitlength of the key
+    bitlength=512 # bitlength of the key
     message="Hello world!" # message to encrypt
     debug=True # activate the debug traces
 
-    total_time=test(n, message, debug)
+    message = "1"
     #
     # pubkey =  88048172210701252338959188750383622595097395288261062793500603004470953510687203545397946025878779767092339296203186795673830863642904792107319396180158297960320654696018165053448424982635801581963660561705775340453448516464064812300960667602848007017918947498368526536440990568888492596882793728614269185083
     #
     # exponent = 65537
     #
     # privkey = 13779484539711268361605427764748304395175495289287724347186153389922583192431196166491814294435596757269673283664311539585709541983207241714584454383352814260081607795479697516159951819779333925978658150358550508143115280692886395707481797894819684845785195060625469622605975130713666752353891008214163345949
+
+    # bin_message = encode_message(message, 2*bitlength)
+    #
+    # for elem in string_to_blocks(bin_message, 2*bitlength):
+    #     print(elem)
+    #     cipher = crypt_block(elem, exponent, pubkey)
+    #     print(cipher)
+    #     plain = crypt_block(cipher, privkey, pubkey)
+    #     print(plain)
+
+    total_time=test(bitlength, message, debug)
