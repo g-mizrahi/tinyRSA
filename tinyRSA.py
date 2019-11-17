@@ -2,6 +2,7 @@
 # TO DO Implement a crack of the algorithm for small numbers
 
 # Guilhem Mizrahi 11/2019
+# V2
 
 # RSA algorithm
 # 4 steps :
