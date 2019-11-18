@@ -142,7 +142,7 @@ def decrypt(id):
         bin_plain += crypt_block(bin_block, d, n)
 
     plain = display_bin_block(bin_plain)
-    plain = hex_to_ascii(ascii_to_hex(plain))
+    # plain = hex_to_ascii(ascii_to_hex(plain))
     # return(plain)
     return(render_template("encrypt.html", keys=key, plain=plain))
 
