@@ -14,6 +14,8 @@
 # TO DO
 # Backend
 #       - integrate into webapp
+#       - encode ascii to hex to display in HTML
+#       - decode hex to ascii to decode from HTML and into binary with encode_message
 # Frontend
 #       - better looking page : minimalist design
 #       - better display of keys and text
@@ -167,6 +169,28 @@ def encode_message(message, blocksize):
     if len(blocks)%blocksize>0:
         blocks=(blocksize-len(blocks)%blocksize)*"0"+blocks # pad the blocks to reach the end of the blocksize
     return(blocks) # This returns a long string, it is intended to be chunked into blocks of size blocksize
+
+def ascii_to_hex(message):
+    '''
+    returns the string of hex values of the ascii string
+    '''
+    hex_string = ""
+    for letter in message:
+        hex_string+="0x{0:02X}".format(ord(letter))
+    return(hex_string)
+
+def hex_to_ascii(hex_string):
+    '''
+    return the ascii string that corresponds to the hex string
+    hex characters have to be in format 0x** with ** a valid hex number in the ascii range
+    '''
+    ascii_string = ""
+    try:
+        for letter in hex_string.split("0x")[1:]:
+            ascii_string += chr(int(letter, 16))
+        return(ascii_string)
+    else:
+        return("Invalid hex string")
 
 def string_to_blocks(message, blocksize):
     '''
