@@ -176,19 +176,18 @@ def ascii_to_hex(message):
     '''
     hex_string = ""
     for letter in message:
-        hex_code = "0x{0:02X}".format(ord(letter))
-        if hex_code != "0x00":
-            hex_string += hex_code
+        hex_code = "\\x{0:02X}".format(ord(letter))
+        hex_string += hex_code
     return(hex_string)
 
 def hex_to_ascii(hex_string):
     '''
     return the ascii string that corresponds to the hex string
-    hex characters have to be in format 0x** with ** a valid hex number in the ascii range
+    hex characters have to be in format (backslash)x** with ** a valid hex number in the ascii range
     '''
     ascii_string = ""
     try:
-        for letter in hex_string.split("0x")[1:]:
+        for letter in hex_string.split("\\x")[1:]:
             ascii_string += chr(int(letter, 16))
         return(ascii_string)
     except:
@@ -239,6 +238,10 @@ def RSA(bitlength, message):
     '''
     Implements the generation of keys, encryption and decryption of message
     '''
+    # Make the program deterministic
+
+    # random.seed(1) # this seed makes the program not work properly
+
     # Generating the primes
     p = choose_prime(bitlength)
     q = choose_prime(bitlength)
@@ -252,6 +255,9 @@ def RSA(bitlength, message):
     e = choose_exponent(lowest_multiple)    # part of the public key
     d = inverse(e, lowest_multiple)         # private key
 
+    # print("p = [{}]\nq = [{}]\nn = [{}]\ne = [{}]\nd = [{}]".format(p, q, n, e, d))
+    print("d*e = {} (mod {})".format((d*e)%lowest_multiple, "lambda"))
+
     # Encode the message
 
     bin_message = encode_message(message, 2*bitlength) # turn the message in binary
@@ -263,20 +269,34 @@ def RSA(bitlength, message):
     for bin_block in bin_message_blocks:
         bin_cipher += crypt_block(bin_block, e, n)
 
-    # Decrypt the cipher
+    # Decode the cipher
+
+    hex_cipher = ascii_to_hex(display_bin_block(bin_cipher))
+
+    # Encode the cipher
+
+    bin_cipher = encode_message(hex_to_ascii(hex_cipher), 2*bitlength)
 
     bin_message_blocks = string_to_blocks(bin_cipher, 2*bitlength) # generator of blocks
+
+    # Decrypt the cipher
+
     bin_plain = ""
     for bin_block in bin_message_blocks:
         bin_plain += crypt_block(bin_block, d, n)
 
     # Display the messages
 
-    print("Original message = [{}]".format(display_bin_block(bin_message)))
+    # print("Original message =\n[{}]".format(ascii_to_hex(display_bin_block(bin_message))))
+    # print("\n"+"#"*30)
+    # print("Encrypted message =\n[{}]".format(hex_cipher))
+    # print("\n"+"#"*30)
+    # print("Decrypted message =\n[{}]".format(ascii_to_hex(display_bin_block(bin_plain))))
+    print("Original message =\n[{}]".format(display_bin_block(bin_message)))
+    # print("\n"+"#"*30)
+    # print("Encrypted message =\n[{}]".format(hex_cipher))
     print("\n"+"#"*30)
-    print("Encrypted message = [{}]".format(display_bin_block(bin_cipher)))
-    print("\n"+"#"*30)
-    print("Decrypted message = [{}]".format(display_bin_block(bin_plain)))
+    print("Decrypted message =\n[{}]".format(display_bin_block(bin_plain)))
 
 class RSA_key():
     '''
@@ -365,6 +385,6 @@ if __name__=="__main__":
 
     bitlength=512 # bitlength of the key
     # message="Hello world!" # message to encrypt
-    message = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    message = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
     debug=True # activate the debug traces
     test(bitlength, message)
