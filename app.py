@@ -72,7 +72,6 @@ def index():
             try:
                 db.session.add(new_key)
                 db.session.commit()
-                # return(str(new_key.id))
                 key=RSA_scheme.query.filter_by(id=str(new_key.id)).all()
                 return(render_template("encrypt.html", keys=key))
             except:
@@ -109,9 +108,7 @@ def encrypt(id):
     for bin_block in bin_message_blocks:
         bin_cipher += crypt_block(bin_block, e, n)
 
-    return(bin_cipher)
-
-    cipher=display_bin_block(bin_message)
+    cipher=display_bin_block(bin_cipher)
     return(render_template("encrypt.html", keys=key, cipher=cipher))
 
 # Endpoint to decrypt the content of the form
