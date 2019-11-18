@@ -43,16 +43,30 @@ def index():
     If the method is POST
             then someone just asked to create new keys. Perform the logic and redirect
     Security checks for request and form name.
+
+    TODO
+            - Retreive the value of the bitlength from the form
     '''
     if request.method=='GET':
         return(render_template("index.html"))
     elif request.method=='POST':
         if request.form['generate']:
-            p=choose_prime(512)
-            q=choose_prime(512)
-            n=p*q
-            e=choose_exponent(n)
-            d=compute_inverse(e, lcm(p-1, q-1))
+
+            bitlength = 512
+
+            # Generating the primes
+            p = choose_prime(bitlength)
+            q = choose_prime(bitlength)
+
+            # Creating the keys
+
+            n = p*q
+
+            lowest_multiple = lcm(p-1, q-1)
+
+            e = choose_exponent(lowest_multiple)    # part of the public key
+            d = inverse(e, lowest_multiple)         # private key
+
             new_key=RSA_scheme(p=str(p), q=str(q), n=str(n), e=str(e), d=str(d))
             # return("p={}\nq={}\nn={}\ne={}\nd={}".format(str(p),str(q),str(n),str(e),str(d)))
             try:
@@ -76,7 +90,28 @@ def encrypt(id):
     '''
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     message=request.form['plain']
-    cipher=encrypt_message(message, int(key[0].e), int(key[0].n))
+
+    # Perform the encryption algorithm on the plain text
+
+    # Encode the message
+
+    bitlength = 512
+
+    bin_message = encode_message(message, 2*bitlength) # turn the message in binary
+    bin_message_blocks = string_to_blocks(bin_message, 2*bitlength) # generator of blocks
+
+    # Encrypt the message
+
+    e = int(key[0].e)
+    n = int(key[0].n)
+
+    bin_cipher = ""
+    for bin_block in bin_message_blocks:
+        bin_cipher += crypt_block(bin_block, e, n)
+
+    return(bin_cipher)
+
+    cipher=display_bin_block(bin_message)
     return(render_template("encrypt.html", keys=key, cipher=cipher))
 
 # Endpoint to decrypt the content of the form
@@ -87,8 +122,27 @@ def decrypt(id):
     '''
     key=RSA_scheme.query.filter_by(id=str(id)).all()
     cipher=request.form['cipher']
-    message=decrypt_message(cipher, int(key[0].d), int(key[0].n))
-    return(render_template("encrypt.html", keys=key, plain=message))
+
+    # Perform the decryption algorithm on the message
+
+    # Encode the message
+
+    bitlength = 512
+
+    bin_cipher = encode_message(cipher, 2*bitlength) # turn the message in binary
+    bin_cipher_blocks = string_to_blocks(bin_cipher, 2*bitlength) # generator of blocks
+
+    # Decrypt the message
+
+    d = int(key[0].d)
+    n = int(key[0].n)
+
+    bin_plain = ""
+    for bin_block in bin_cipher_blocks:
+        bin_plain += crypt_block(bin_block, d, n)
+
+    plain=display_bin_block(bin_plain)
+    return(render_template("encrypt.html", keys=key, plain=plain))
 
 if __name__=="__main__":
     app.run(debug=True)
