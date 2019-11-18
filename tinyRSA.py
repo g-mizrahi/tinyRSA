@@ -27,19 +27,6 @@
 import random
 import time
 
-class RSA_key():
-    '''
-    Class to hold all the attributes of the RSA scheme
-            - public key
-            - public exponent
-            - private key
-    Also hold the methods to
-            - generate the keys
-            - encrypt a message
-            - decrypt a message
-            - generate new keys
-    '''
-
 def is_number(n):
     '''
     Returns True if the input is an integer
@@ -221,6 +208,7 @@ def display_bin_block(bin_message):
         message+=chr(int(bin_char, 2)) # converts each block in ascii
     return(message)
 
+
 def RSA(bitlength, message):
     '''
     Implements the generation of keys, encryption and decryption of message
@@ -259,8 +247,98 @@ def RSA(bitlength, message):
     # Display the messages
 
     print("Original message = [{}]".format(display_bin_block(bin_message)))
+    print("\n"+"#"*30)
     print("Encrypted message = [{}]".format(display_bin_block(bin_cipher)))
+    print("\n"+"#"*30)
     print("Decrypted message = [{}]".format(display_bin_block(bin_plain)))
+
+# def RSA2(bitlength, message):
+#     '''
+#     Implements the generation of keys, encryption and decryption of message
+#     '''
+#
+#     # Create the keys
+#
+#     key = RSA_key(bitlength)
+#
+#     print("Initial message = [{}]".format(message))
+#     print("\n"+"#"*30)
+#
+#     # Encrypt the message
+#
+#     cipher = key.encrypt_message(message)
+#     print("Cipher text = [{}]".format(cipher))
+#     print("\n"+"#"*30)
+#
+#     # Decrypt the cipher text
+#
+#     plain = key.decrypt_message(cipher)
+#     print("Plain text = [{}]".format(plain))
+
+class RSA_key():
+    '''
+    Class to hold all the attributes of the RSA scheme
+            - public key
+            - public exponent
+            - private key
+    Also hold the methods to
+            - encrypt a message
+            - decrypt a message
+    '''
+    def __init__(self, bitlength):
+        '''
+        Method to instanciate the class, it will generate the keys
+        '''
+        self.bitlength = bitlength
+
+        # Generate the primes (must be kept "private" - python doesn't have private attributes or methods)
+
+        self.__p = choose_prime(self.bitlength)
+        self.__q = choose_prime(self.bitlength)
+
+        # Creating the keys
+
+        self.n = self.__p*self.__q
+
+        lowest_multiple = lcm(self.__p-1, self.__q-1)
+
+        self.e = choose_exponent(lowest_multiple)    # part of the public key
+        self.__d = inverse(self.e, lowest_multiple)
+
+    def encrypt_message(self, message):
+        '''
+        Encrypt a message with the key
+        '''
+        # Encode the mesage
+
+        bin_message = encode_message(message, 2*self.bitlength) # turn the message in binary
+        bin_message_blocks = string_to_blocks(bin_message, 2*self.bitlength) # generator of blocks
+
+        # Encrypt the message
+
+        bin_cipher = ""
+        for bin_block in bin_message_blocks:
+            bin_cipher += crypt_block(bin_block, self.e, self.n)
+
+        return(display_bin_block(bin_cipher)) # return the ascii string of the encrypted message
+
+    def decrypt_message(self, cipher):
+        '''
+        Decrypt the cipher text using the key
+        '''
+        # Encode the cipher text
+
+        bin_cipher = encode_message(cipher, 2*self.bitlength)
+
+        bin_message_blocks = string_to_blocks(bin_cipher, 2*bitlength) # generator of blocks
+
+        # Decrypt the cipher text
+
+        bin_plain = ""
+        for bin_block in bin_message_blocks:
+            bin_plain += crypt_block(bin_block, self.__d, self.n)
+
+        return(display_bin_block(bin_plain))
 
 if __name__=="__main__":
 
