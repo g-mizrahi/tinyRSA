@@ -13,9 +13,7 @@
 
 # TO DO
 # Backend
-#       - implement security checks, fail gracefully
-#       - better encoding, padding etc of text before encryption
-#       - better decoding of data after decryption
+#       - integrate into webapp
 # Frontend
 #       - better looking page : minimalist design
 #       - better display of keys and text
