@@ -176,7 +176,9 @@ def ascii_to_hex(message):
     '''
     hex_string = ""
     for letter in message:
-        hex_string+="0x{0:02X}".format(ord(letter))
+        hex_code = "0x{0:02X}".format(ord(letter))
+        if hex_code != "0x00":
+            hex_string += hex_code
     return(hex_string)
 
 def hex_to_ascii(hex_string):
@@ -189,7 +191,7 @@ def hex_to_ascii(hex_string):
         for letter in hex_string.split("0x")[1:]:
             ascii_string += chr(int(letter, 16))
         return(ascii_string)
-    else:
+    except:
         return("Invalid hex string")
 
 def string_to_blocks(message, blocksize):

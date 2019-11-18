@@ -108,7 +108,8 @@ def encrypt(id):
     for bin_block in bin_message_blocks:
         bin_cipher += crypt_block(bin_block, e, n)
 
-    cipher=display_bin_block(bin_cipher)
+    cipher = display_bin_block(bin_cipher)
+    cipher = ascii_to_hex(cipher)
     return(render_template("encrypt.html", keys=key, cipher=cipher))
 
 # Endpoint to decrypt the content of the form
@@ -126,6 +127,8 @@ def decrypt(id):
 
     bitlength = 512
 
+    cipher = hex_to_ascii(cipher)
+
     bin_cipher = encode_message(cipher, 2*bitlength) # turn the message in binary
     bin_cipher_blocks = string_to_blocks(bin_cipher, 2*bitlength) # generator of blocks
 
@@ -138,7 +141,9 @@ def decrypt(id):
     for bin_block in bin_cipher_blocks:
         bin_plain += crypt_block(bin_block, d, n)
 
-    plain=display_bin_block(bin_plain)
+    plain = display_bin_block(bin_plain)
+    plain = hex_to_ascii(ascii_to_hex(plain))
+    # return(plain)
     return(render_template("encrypt.html", keys=key, plain=plain))
 
 if __name__=="__main__":
