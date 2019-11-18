@@ -27,6 +27,19 @@
 import random
 import time
 
+class RSA_key():
+    '''
+    Class to hold all the attributes of the RSA scheme
+            - public key
+            - public exponent
+            - private key
+    Also hold the methods to
+            - generate the keys
+            - encrypt a message
+            - decrypt a message
+            - generate new keys
+    '''
+
 def is_number(n):
     '''
     Returns True if the input is an integer
@@ -210,7 +223,7 @@ def display_bin_block(bin_message):
 
 def RSA(bitlength, message):
     '''
-    Implement the generation of keys, encryption and decryption of message
+    Implements the generation of keys, encryption and decryption of message
     '''
     # Generating the primes
     p = choose_prime(bitlength)
