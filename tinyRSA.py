@@ -177,7 +177,8 @@ def ascii_to_hex(message):
     hex_string = ""
     for letter in message:
         hex_code = "\\x{0:02X}".format(ord(letter))
-        hex_string += hex_code
+        if hex_code != "\\x00":
+            hex_string += hex_code
     return(hex_string)
 
 def hex_to_ascii(hex_string):
@@ -385,6 +386,7 @@ if __name__=="__main__":
 
     bitlength=512 # bitlength of the key
     # message="Hello world!" # message to encrypt
-    message = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+    # message = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do"
+    message = "A+B=X"
     debug=True # activate the debug traces
     test(bitlength, message)
