@@ -25,27 +25,30 @@
 # With 1024 bits long primes (2048 bits RSA key) it takes between 1.5 and 7 seconds
 # Almost 100% of that time is spent generating the prime numbers
 
-import math
+# import math # only needed for the sqrt function in the slow primality test
 import random
 import time
 
 def is_number(n):
+    '''
+    Returns True if the input is an integer
+    '''
     return(isinstance(n, int))
 
-def is_prime_slow(n):
-    '''
-    Test if a number is prime. Return True if it is and False otherwise
-    Using the most simple method of checking all numbers up to the square root
-    Complexity is O(sqrt(n))
-    '''
-    if not is_number(n) or n<2:
-        return(False)
-    else:
-        limit=math.ceil(math.sqrt(n))
-        for i in range(2, limit+1):
-            if n%i==0:
-                return(False)
-        return(True)
+# def is_prime_slow(n):
+#     '''
+#     Test if a number is prime. Return True if it is and False otherwise
+#     Using the most simple method of checking all numbers up to the square root
+#     Complexity is O(sqrt(n))
+#     '''
+#     if not is_number(n) or n<2:
+#         return(False)
+#     else:
+#         limit=math.ceil(math.sqrt(n))
+#         for i in range(2, limit+1):
+#             if n%i==0:
+#                 return(False)
+#         return(True)
 
 def is_prime_fast(n):
     '''
@@ -84,7 +87,7 @@ def choose_prime(l):
     '''
     Will return a random prime of bit length l
     This function implements a monte carlo method of finding prime numbers.
-    By choosing random numbers until it has a prime
+    By choosing random numbers until it has found a prime
     '''
     assert is_number(l) and l>0, "Invalid bitlength"
 
@@ -110,7 +113,7 @@ def gcd(a, b):
 
 def lcm(a, b):
     '''
-    Returns a common multiple of a and b
+    Returns the lowest common multiple of a and b using the gcd function for speed
     '''
     assert is_number(a) and is_number(b), "Invalid number a or b"
     return(a*b//gcd(a, b))
@@ -120,8 +123,8 @@ def choose_exponent(n):
     In theory the goal is to look for an integer e such that:
             1 < e < lambda(n)
             gcd(e, lambda(n)) = 1
-    In practice it is easier to return pow(2, 16)+1 or 3 depending on the size of n
-    This implementation is satisfactory for a POC
+    In practice it is easier to return a choice from a list of candidates and hope that one of them work
+    This implementation is satisfactory for a MVP
     '''
     assert is_number(n), "Invalid input"
 
@@ -171,7 +174,7 @@ def string_to_blocks(message, blocksize):
     '''
     This function takes a string as input and returns an iterator of strings of size blocksize
     This is intended for two purposes :
-            - chunk the binary string in blocks of length len(key) for the encryption and decryption
+            - chunk the binary string in blocks of length len(pub_key) for the encryption and decryption
             - chunk the binary string in blocks of size 8 to decode in ascii
     '''
     assert is_number(blocksize), "Invalid argument blocksize must be an integer"
@@ -197,20 +200,14 @@ def crypt_block(block, exponent, modulus):
         bin_cipher="0"*(blocksize-len(bin_cipher)%blocksize)+bin_cipher # append some zeros to return a block of length multiple of the original block (with same binary value)
     return(bin_cipher)
 
-def crypt_number(number, exponent, modulus):
-    '''
-    Performs the encryption or decryption algorithm on the number
-    '''
-    return(pow(number, exponent, modulus))
-
 def display_bin_block(bin_message):
     '''
     This function returns the string in ascii code that corresponds to the binary message in input.
     '''
-    bin_chars=string_to_blocks(bin_message, 8)
+    bin_chars=string_to_blocks(bin_message, 8) # chunks the string to get 8 bits blocks (for ascii)
     message=""
     for bin_char in bin_chars:
-        message+=chr(int(bin_char, 2))
+        message+=chr(int(bin_char, 2)) # converts each block in ascii
     return(message)
 
 def RSA(bitlength, message):
@@ -221,21 +218,14 @@ def RSA(bitlength, message):
     p = choose_prime(bitlength)
     q = choose_prime(bitlength)
 
-    # Creating the public key
+    # Creating the keys
 
     n = p*q
 
-    # Generating the private key
-
     lowest_multiple = lcm(p-1, q-1)
 
-    e = choose_exponent(lowest_multiple)
-    d = inverse(e, lowest_multiple)
-
-    # Verification phase
-
-    # print("lambda(n) = [{}]".format(lowest_multiple))
-    # print("gcd(e, lambda) = [{}]".format(gcd(e, lowest_multiple)))
+    e = choose_exponent(lowest_multiple)    # part of the public key
+    d = inverse(e, lowest_multiple)         # private key
 
     # Encode the message
 
@@ -247,8 +237,6 @@ def RSA(bitlength, message):
     bin_cipher = ""
     for bin_block in bin_message_blocks:
         bin_cipher += crypt_block(bin_block, e, n)
-    # print("Original binary = [{}]".format(bin_message))
-    # print("Encrypted bnary = [{}]".format(bin_cipher))
 
     # Decrypt the cipher
 
@@ -256,29 +244,12 @@ def RSA(bitlength, message):
     bin_plain = ""
     for bin_block in bin_message_blocks:
         bin_plain += crypt_block(bin_block, d, n)
-    # print("Decrypted binary = [{}]".format(bin_plain))
 
     # Display the messages
 
-    ascii_message_blocks = string_to_blocks(bin_message, 8)
-    ascii_message=""
-    for bin_letter in ascii_message_blocks:
-        ascii_message += chr(int(bin_letter, 2))
-
-    ascii_cipher_blocks = string_to_blocks(bin_cipher, 8)
-    ascii_cipher=""
-    for bin_letter in ascii_cipher_blocks:
-        ascii_cipher += chr(int(bin_letter, 2))
-
-    ascii_plain_blocks = string_to_blocks(bin_plain, 8)
-    ascii_plain=""
-    for bin_letter in ascii_plain_blocks:
-        ascii_plain += chr(int(bin_letter, 2))
-
-    print("Original message = [{}]".format(ascii_message))
-    print("Encrypted message = [{}]".format(ascii_cipher))
-    print("Decrypted message = [{}]".format(ascii_plain))
-
+    print("Original message = [{}]".format(display_bin_block(bin_message)))
+    print("Encrypted message = [{}]".format(display_bin_block(bin_cipher)))
+    print("Decrypted message = [{}]".format(display_bin_block(bin_plain)))
 
 if __name__=="__main__":
 
@@ -289,15 +260,19 @@ if __name__=="__main__":
         # Start the clock
         t=time.time()
 
-        # main(n, message, debug) # we want to test the efficiency of main
+        # Execute the function
+
         RSA(n, message)
+
+        # Display time
 
         t=time.time()-t
         print("\nTest for param n = {}\ttime = {:.3f}s".format(n, t))
 
         return(t)
 
-    bitlength=1024 # bitlength of the key
-    message="Hello world!" # message to encrypt
+    bitlength=512 # bitlength of the key
+    # message="Hello world!" # message to encrypt
+    message = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     debug=True # activate the debug traces
     test(bitlength, message)
