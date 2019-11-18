@@ -252,29 +252,6 @@ def RSA(bitlength, message):
     print("\n"+"#"*30)
     print("Decrypted message = [{}]".format(display_bin_block(bin_plain)))
 
-# def RSA2(bitlength, message):
-#     '''
-#     Implements the generation of keys, encryption and decryption of message
-#     '''
-#
-#     # Create the keys
-#
-#     key = RSA_key(bitlength)
-#
-#     print("Initial message = [{}]".format(message))
-#     print("\n"+"#"*30)
-#
-#     # Encrypt the message
-#
-#     cipher = key.encrypt_message(message)
-#     print("Cipher text = [{}]".format(cipher))
-#     print("\n"+"#"*30)
-#
-#     # Decrypt the cipher text
-#
-#     plain = key.decrypt_message(cipher)
-#     print("Plain text = [{}]".format(plain))
-
 class RSA_key():
     '''
     Class to hold all the attributes of the RSA scheme
