@@ -47,8 +47,8 @@ class TinyRSA_key():
         This method with generate a new key for the object with prime numbers of specified bitlength. By default the primes are 512 bits long which makes for a 1024 public key length.
         """
         # Input check
-        if not bitlength == int(bitlength):     # The bitlength has to be an integer
-            raise ValueError("Invalid bitlength for constructor")
+        if not (isinstance(bitlength, int) and bitlength > 1):     # The bitlength has to be an integer strickly greater than 1
+            raise ValueError("Invalid bitlength for constructor, should be an integer strickly greater than 1")
 
         # Generate the primes
         self.p = RSAlib.prime_with_bitlength(bitlength) # first prime of specified bitlength
@@ -72,7 +72,7 @@ class TinyRSA_key():
         It still performs the check to see if the input is valid to generate a key
         """
         # Input check
-        if not(p==int(p) and q==int(q) and e==int(e)):
+        if not(isinstance(p, int) and isinstance(q, int) and isinstance(e, int)):
             raise ValueError("Invalid input, expecting three integers")
 
         if is_prime_fast(p) and is_prime_fast(q):               # The input values have to be valid primes
@@ -106,7 +106,7 @@ class TinyRSA_key():
         In practice it is easier to return a choice from a list of candidates and hope that one of them work
         """
         # Input check
-        if not lowest_multiple == int(lowest_multiple):    # The input has to be an integer
+        if not isinstance(lowest_multiple, int):    # The input has to be an integer
             raise ValueError("Invalid input to choose an exponent")
 
         # Choose the exponent from a list of candidates
