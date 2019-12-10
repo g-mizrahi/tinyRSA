@@ -2,7 +2,7 @@
 # This project is about implementing a very simple (and insecure) RSA cryptosystem to play around
 # The main goal is to be able to change the length of the key for hacking purposes
 #
-# Guilhem Mizrahi 11/2019
+# Guilhem Mizrahi 12/2019
 #
 # This file contains the set of functions that are underlying to TinyRSA
 # Essentially these functions are mathematical functions to perform arithmetics
