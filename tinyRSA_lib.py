@@ -1,4 +1,4 @@
-# This library is to support the TinyRSA project.
+# This file is part of the TinyRSA project.
 # This project is about implementing a very simple (and insecure) RSA cryptosystem to play around
 # The main goal is to be able to change the length of the key for hacking purposes
 #
