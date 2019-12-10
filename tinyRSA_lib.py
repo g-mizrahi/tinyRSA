@@ -90,14 +90,8 @@ def prime_with_bitlength(l):
     By choosing random numbers until it has found a prime
     '''
     # Input check
-    try:
-        l == int(l)
-        if l<=0:
-            raise ValueError
-    except ValueError:
-    if not isinstance(l, int) and l>0:
-        print("Invalid bitlength")
-        raise SystemExit(1)
+    if not((isinstance(l, int) and l>=2):
+        raise ValueError("Invalid bitlength, it should be an integer strickly greater than 1")
 
     count_passes=0
     start=pow(2,l-1)+1  # we want primes larger than start and only odd numbers (hence the +1)
@@ -118,8 +112,7 @@ def gcd(a, b):
     Computes the gcd of a and b using the euclidian algorithm
     '''
     if not (isinstance(a, int) and isinstance(b, int)):
-        print("Invalid input for gcd")
-        raise SystemExit(1)
+        raise ValueError("Invalid input for gcd, should be two integers")
 
     while b!=0:
         a, b = b, a%b   # gcd(a, b) = gcd(b, a%b)
@@ -135,8 +128,7 @@ def lcm(a, b):
     Returns the lowest common multiple of a and b using the gcd function for speed
     '''
     if not (isinstance(a, int) and isinstance(b, int)):
-        print("Invalid input for lcm")
-        raise SystemExit(1)
+        raise ValueError("Invalid input for lcm, should be two integers")
 
     return(a*b//gcd(a, b))
 
