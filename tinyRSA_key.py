@@ -47,11 +47,8 @@ class TinyRSA_key():
         This method with generate a new key for the object with prime numbers of specified bitlength. By default the primes are 512 bits long which makes for a 1024 public key length.
         """
         # Input check
-        try:
-            bitlength == int(bitlength)     # The bitlength has to be an integer
-        except:
-            print("Invalid bitlength for constructor")
-            raise ValueError
+        if not bitlength == int(bitlength):     # The bitlength has to be an integer
+            raise ValueError("Invalid bitlength for constructor")
 
         # Generate the primes
         self.p = RSAlib.prime_with_bitlength(bitlength) # first prime of specified bitlength
@@ -75,12 +72,8 @@ class TinyRSA_key():
         It still performs the check to see if the input is valid to generate a key
         """
         # Input check
-        try:
-            p = int(p)
-            q = int(q)
-            e = int(e)
-        except:
-            raise ValueError
+        if not(p==int(p) and q==int(q) and e==int(e)):
+            raise ValueError("Invalid input, expecting three integers")
 
         if is_prime_fast(p) and is_prime_fast(q):               # The input values have to be valid primes
             lowest_multiple = RSAlib.lcm(self.p-1, self.q-1)    # Carmichael function of n
@@ -113,16 +106,12 @@ class TinyRSA_key():
         In practice it is easier to return a choice from a list of candidates and hope that one of them work
         """
         # Input check
-        try:
-            lowest_multiple == int(lowest_multiple)     # The input has to be an integer
-        except:
-            print("Invalid input to choose an exponent")
-            raise ValueError
+        if not lowest_multiple == int(lowest_multiple):    # The input has to be an integer
+            raise ValueError("Invalid input to choose an exponent")
 
         # Choose the exponent from a list of candidates
         possible = [3,5,17,257,65537]           # List of prime numbers candidate to be exponents
         for candidate in possible:
             if lowest_multiple%candidate:       # If the candidate is not a divisor of the input then they are coprime (because the candidate is a prime number)
                 return(candidate)
-        print("Couldn't choose a valid exponent")       # If nothing is returned then no exponent is valid and the program needs to crash
-        raise SystemExit(1)                             # Crash the program
+        raise ValueError("Couldn't choose a valid exponent")    # Raise error if no candidate has been returned
