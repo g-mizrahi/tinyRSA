@@ -89,6 +89,12 @@ def prime_with_bitlength(l):
     This function implements a monte carlo method of finding prime numbers.
     By choosing random numbers until it has found a prime
     '''
+    # Input check
+    try:
+        l == int(l)
+        if l<=0:
+            raise ValueError
+    except ValueError:
     if not isinstance(l, int) and l>0:
         print("Invalid bitlength")
         raise SystemExit(1)
