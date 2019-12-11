@@ -63,7 +63,7 @@ class RSA_message():
 
     def add_plain(self, plain):
         """
-        This function allows to add a plain text to the message
+        This method allows to add a plain text to the message
         This message is intended to be encrypted
         """
         try:                        # make sure the plain text is a string
