@@ -31,7 +31,7 @@
 #       - display               (pretty display of the input)
 #       - renew_key             (generate/create a new RSA key to encrypt/decrypt)
 
-import tinyRSA_key as RSAkey
+from tinyRSA_key import TinyRSA_key as RSAkey
 import binascii
 
 class RSA_message():
@@ -45,21 +45,18 @@ class RSA_message():
         The constructor is just to create the class attributes, the plain or cipher texts and the key have to be added with the add_plain, add_cipher and add_key methods.
         """
         self.plain = None
-        self.plain_hex = None       # check if necessary with a better implementation
-        # self.plain_bin = None       # check if necessary with a better implementation
-        # self.cipher_hex = None          # check if it makes sense to have an ascii cipher (cipher will be a number outside of ascii range)
-        self.cipher = None      # check if necessary with a better implementation
-        # self.cipher_bin = None      # check if necessary with a better implementation
-        self.key = None
+        self.plain_hex = None
+        self.cipher = None
+        self.key = RSAkey()     # creates an empty RSA key
 
-    def display(self):
+    def display(self, show_key=False):
         """
         This method displays the attributes of the class
         """
         print("\tplain text = {}".format(self.plain))
         print("\tplain hex = {}".format(self.plain_hex))
         print("\tcipher text = {}".format(self.cipher))
-        # print("\tcipher hex = {}".format(self.cipher_hex))
+        self.key.display()
 
     def add_plain(self, plain):
         """
@@ -82,11 +79,23 @@ class RSA_message():
         try:                        # make sure the cipher input is a valid hexstring
             cipher = binascii.unhexlify(cipher)
         except:
-            raise ValueError("Invalut input for add_cipher, expected a byte string of hexcodes (example b'68656c6c6f' for hello)")
+            raise ValueError("Invalut input for add_cipher, expected a byte string of hexcodes (example b'68656c6c6f' for hello).")
         self.cipher = cipher        # set the attribute
+
+    def add_key(self, key):
+        """
+        This method will link a key to the message.
+        This key will be used to encrypt and decrypt, it can be changed by calling this same method again with a different key.
+        """
+        if not isinstance(key, RSAkey):    # check if the input is a valid key
+            raise ValueError("Invalid input for add_key, expected a TinyRSA_key object.")
+        self.key = key
 
 if __name__ == '__main__':
     msg = RSA_message()
     msg.add_plain("hello")
     msg.add_cipher(b"68656c6c6f68656c6c6f")
     msg.display()
+    key = RSAkey()
+    key.create_new()
+    msg.add_key(key)
