@@ -42,6 +42,18 @@ class TinyRSA_key():
         self.e = None       # exponent, part of public key
         self.d = None       # private exponent, part of private key
 
+    def display(self):
+        """
+        This method prints the attributes of the class.
+        """
+        print("TinyRSA_key object")
+        print("\tp = {}".format(self.p))
+        print("\tq = {}".format(self.q))
+        print("\tn = {}".format(self.n))
+        print("\te = {}".format(self.e))
+        print("\td = {}".format(self.d))
+
+
     def create_new(self, bitlength = 512):
         """
         This method with generate a new key for the object with prime numbers of specified bitlength. By default the primes are 512 bits long which makes for a 1024 public key length.
@@ -115,3 +127,8 @@ class TinyRSA_key():
             if lowest_multiple%candidate:       # If the candidate is not a divisor of the input then they are coprime (because the candidate is a prime number)
                 return(candidate)
         raise ValueError("Couldn't choose a valid exponent")    # Raise error if no candidate has been returned
+
+if __name__ == '__main__':
+    key = TinyRSA_key()
+    key.create_new()
+    
