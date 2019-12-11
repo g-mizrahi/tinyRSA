@@ -88,16 +88,17 @@ def is_prime_fast(n):
 def prime_with_bitlength(l):
     '''
     Will return a random prime of bit length l
-    This function implements a monte carlo method of finding prime numbers.
-    By choosing random numbers until it has found a prime
+    This function implements a monte carlo method of finding prime numbers by choosing random numbers until it has found a prime.
+
+    The range of value is adjusted so that multiplying two primes of length l procudes a number of length 2l.
     '''
     # Input check
     if not (isinstance(l, int) and l>=2):
         raise ValueError("Invalid bitlength, it should be an integer strickly greater than 1")
 
     count_passes=0
-    start=pow(2,l-1)+1  # we want primes larger than start and only odd numbers (hence the +1)
-    stop=pow(2,l)       # but smaller than stop
+    start=int(pow(2,l-1)*(2**0.5))+1    # we want primes larger than start and only odd numbers (hence the +1) multiply by sqrt to make sure the public key is of the expected length
+    stop=pow(2,l)                       # but smaller than stop
     p=start
     while not is_prime_fast(p):
         p=random.randrange(start, stop, 2)  # because primes greater than 2 are odd, we only check for odd numbers (hence step=2)
