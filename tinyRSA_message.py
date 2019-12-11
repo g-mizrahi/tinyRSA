@@ -92,7 +92,7 @@ class RSA_message():
             # find a way to split the plain text in blocks to match the length of the key
             blocks = None
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     msg = RSA_message()
     msg.add_plain("hello")
     msg.add_cipher(b"68656c6c6f68656c6c6f")
