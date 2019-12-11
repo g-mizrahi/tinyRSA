@@ -90,7 +90,7 @@ def prime_with_bitlength(l):
     By choosing random numbers until it has found a prime
     '''
     # Input check
-    if not((isinstance(l, int) and l>=2):
+    if not (isinstance(l, int) and l>=2):
         raise ValueError("Invalid bitlength, it should be an integer strickly greater than 1")
 
     count_passes=0
