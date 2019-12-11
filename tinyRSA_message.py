@@ -9,11 +9,8 @@
 #
 # List of attributes :
 #       - plain                 (plain text)
-#       - plain_hex             (plain text in hex) - useful ?
-#       - plain_bin             (plain text in binary) - useful ?
+#       - plain_hex             (plain text in hex)
 #       - cipher                (cipher text)
-#       - cipher_hex            (cipher text in hex) - useful ?
-#       - cipher_bin            (cipher text in binary) - useful ?
 #       - key                   (key to encrypt/decrypt)
 #
 # List of methods :
@@ -29,7 +26,6 @@
 #       - ascii_to_hex          (convert a string into hex codes)
 #       - hex_to_ascii          (convert the hex codes into a string)
 #       - display               (pretty display of the input)
-#       - renew_key             (generate/create a new RSA key to encrypt/decrypt)
 
 from tinyRSA_key import TinyRSA_key as RSAkey
 import binascii
@@ -53,9 +49,9 @@ class RSA_message():
         """
         This method displays the attributes of the class
         """
-        print("\tplain text = {}".format(self.plain))
-        print("\tplain hex = {}".format(self.plain_hex))
-        print("\tcipher text = {}".format(self.cipher))
+        print("plain text = {}\n".format(self.plain))
+        print("plain hex = {}\n".format(self.plain_hex))
+        print("cipher text = {}\n".format(self.cipher))
         self.key.display()
 
     def add_plain(self, plain):

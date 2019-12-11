@@ -49,12 +49,12 @@ class TinyRSA_key():
         """
         This method prints the attributes of the class.
         """
-        print("\tTinyRSA_key object")
-        print("\t\tp = {}".format(self.p))
-        print("\t\tq = {}".format(self.q))
-        print("\t\tn = {}".format(self.n))
-        print("\t\te = {}".format(self.e))
-        print("\t\td = {}".format(self.d))
+        print("TinyRSA_key object")
+        print("\tp = {}".format(self.p))
+        print("\tq = {}".format(self.q))
+        print("\tn = {}".format(self.n))
+        print("\te = {}".format(self.e))
+        print("\td = {}".format(self.d))
 
     def get_bitlength(self):
         """
