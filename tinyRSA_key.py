@@ -8,6 +8,8 @@
 # Everything is intentionnaly made public in this class, even the private key as the goal of TinyRSA is to see everything happening
 # Do NOT use this for encryption purposes
 #
+# The original paper on RSA can be found at http://people.csail.mit.edu/rivest/Rsapaper.pdf
+#
 # List of attributes :
 #       - p                 (first prime number)
 #       - q                 (second prime number)
@@ -23,6 +25,7 @@
 #       - create_from       (generating a key from known values - p, q and e)
 #       - get_bitlength     (get the length in bits of the public key n)
 #       - choose_exponent   (choose a valid exponent for the public key)
+#       - display           (display the attributes of the class)
 
 import tinyRSA_lib as RSAlib
 
@@ -34,7 +37,7 @@ class TinyRSA_key():
 
     def __init__(self):
         """
-        The constructor is just to create the class attributes, the actual generation of the keys will happen in the create_new or create_from methods
+        The constructor is just to create the class attributes, the actual generation of the keys will happen in the create_new or create_from methods.
         """
         self.p = None       # first prime number
         self.q = None       # second prime number
@@ -53,6 +56,14 @@ class TinyRSA_key():
         print("\te = {}".format(self.e))
         print("\td = {}".format(self.d))
 
+    def get_bitlength(self):
+        """
+        This methods returns the bit length of the public key, this value is used to categorize the strength of the key.
+        """
+        if self.n==None:    # check if the keys have been generated yet
+            print("Empty key. Initialize the key with the create_new of create_from methods")
+        else:
+            return(self.n.bit_length())     # return the number of bits necessary to represent the public key in binary, excluding the sign and leading zeros
 
     def create_new(self, bitlength = 512):
         """
@@ -79,16 +90,16 @@ class TinyRSA_key():
 
     def create_from(self, p, q, e):
         """
-        This methods allows for the creation of a key from two prime numbers and a public exponent
+        This methods allows for the creation of a key from two prime numbers and a public exponent.
 
-        It still performs the check to see if the input is valid to generate a key
+        It still performs the check to see if the input is valid to generate a key.
         """
         # Input check
-        if not(isinstance(p, int) and isinstance(q, int) and isinstance(e, int)):
+        if not (isinstance(p, int) and isinstance(q, int) and isinstance(e, int)):
             raise ValueError("Invalid input, expecting three integers")
 
-        if is_prime_fast(p) and is_prime_fast(q):               # The input values have to be valid primes
-            lowest_multiple = RSAlib.lcm(self.p-1, self.q-1)    # Carmichael function of n
+        if RSAlib.is_prime_fast(p) and RSAlib.is_prime_fast(q):               # The input values have to be valid primes
+            lowest_multiple = RSAlib.lcm(p-1, q-1)    # Carmichael function of n
             if RSAlib.gcd(e, lowest_multiple)==1:               # All input is valid
                 # Store prime numbers
                 self.p = p
@@ -115,7 +126,7 @@ class TinyRSA_key():
         In theory (in the context of RSA) the goal is to look for an integer e such that:
                 1 < e < lambda(n)
                 gcd(e, lambda(n)) = 1
-        In practice it is easier to return a choice from a list of candidates and hope that one of them work
+        In practice it is easier to return a choice from a list of candidates and hope that one of them work.
         """
         # Input check
         if not isinstance(lowest_multiple, int):    # The input has to be an integer
@@ -131,4 +142,6 @@ class TinyRSA_key():
 if __name__ == '__main__':
     key = TinyRSA_key()
     key.create_new()
-    
+    # key.create_from(11990449251145931745564215483884623262016981102977135227921664818241599323747134700686216463266625884413310564264540932840138433670632832957894634174353833, 13103525810977923770843807104907425881745479779982166927021498282574825679771012018988336764600432834357190457702860607586177142996889546935261565070365399, 5)
+    key.display()
+    print(key.get_bitlength())
