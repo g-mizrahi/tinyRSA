@@ -25,12 +25,12 @@ import random
 # START is_prime_slow FUNCTION
 
 def is_prime_slow(n):
-    '''
+    """
     Test if a number is prime. Return True if it is and False otherwise.
     Using the most simple method of checking all numbers up to the square root.
     Complexity is O(sqrt(n))
     This method is very naive and isn't actually used in the code, it is left here because it was part of the PoC for keylength of 16 bits
-    '''
+    """
     if not isinstance(n, int) or n<2:   # Check if n is a integer, if it isn't then it is not a prime
                                         # Also check if n<2 in which case it isn't prime
         return(False)
@@ -46,7 +46,7 @@ def is_prime_slow(n):
 # START is_prime_fast FUNCTION
 
 def is_prime_fast(n):
-    '''
+    """
     Check if a number is likely to be prime using the Miller-Rabin primality check in a single pass. To have more accuracy, the program would have to have to perform multiple passes
 
     Complexity is in log2(n) for a single pass.
@@ -54,7 +54,7 @@ def is_prime_fast(n):
 
     For more information refer to
     https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
-    '''
+    """
     if not isinstance(n, int) or n<2:   # Check if n is a integer, if it isn't then it is not a prime
                                         # Also check if n<2 in which case it isn't prime
         return(False)
@@ -86,12 +86,12 @@ def is_prime_fast(n):
 # START prime_with_bitlength FUNCTION
 
 def prime_with_bitlength(l):
-    '''
+    """
     Will return a random prime of bit length l
     This function implements a monte carlo method of finding prime numbers by choosing random numbers until it has found a prime.
 
     The range of value is adjusted so that multiplying two primes of length l procudes a number of length 2l.
-    '''
+    """
     # Input check
     if not (isinstance(l, int) and l>=2):
         raise ValueError("Invalid bitlength, it should be an integer strickly greater than 1")
@@ -111,9 +111,9 @@ def prime_with_bitlength(l):
 # START gcd FUNCTION
 
 def gcd(a, b):
-    '''
+    """
     Computes the gcd of a and b using the euclidian algorithm
-    '''
+    """
     if not (isinstance(a, int) and isinstance(b, int)):
         raise ValueError("Invalid input for gcd, should be two integers")
 
@@ -127,9 +127,9 @@ def gcd(a, b):
 # START lcm FUNCTION
 
 def lcm(a, b):
-    '''
+    """
     Returns the lowest common multiple of a and b using the gcd function for speed
-    '''
+    """
     if not (isinstance(a, int) and isinstance(b, int)):
         raise ValueError("Invalid input for lcm, should be two integers")
 
@@ -140,7 +140,7 @@ def lcm(a, b):
 # START multiplicative_inverse FUNCTION
 
 def multiplicative_inverse(a, b):
-    '''
+    """
     This function computes the multiplicative inverse x of a mod b
             a*x=1 (mod b)
     using the extended Euclidian algorithm
@@ -148,7 +148,7 @@ def multiplicative_inverse(a, b):
 
     In the context of RSA this function is used with a = e (the exponent) and b = lambda(n) (Carmichael's totient function https://en.wikipedia.org/wiki/Carmichael_function) and e is chosen such that gcd(e, lambda(n)) = 1
     The inverse will be the private key
-    '''
+    """
     if not (isinstance(a, int) and isinstance(b, int)):
         print("Invalid input for multiplicative inverse")
         raise SystemExit(1)

@@ -17,14 +17,8 @@
 #       - add_plain             (initialize the plain text)
 #       - add_cipher            (initialize the cipher text)
 #       - add_key               (initialize the key)
-#       - pad                   (break the message into blocks and pad it)
-#       - crypt_block           (perform the encrypt/decrypt operation on a single block)
 #       - encrypt               (encrypt the message)
 #       - decrypt               (decrypt the message)
-#       - encode_message        (encode the message)
-#       - decode_message        (decode the message)
-#       - ascii_to_hex          (convert a string into hex codes)
-#       - hex_to_ascii          (convert the hex codes into a string)
 #       - display               (pretty display of the input)
 
 from tinyRSA_key import TinyRSA_key as RSAkey
@@ -83,9 +77,20 @@ class RSA_message():
         This method will link a key to the message.
         This key will be used to encrypt and decrypt, it can be changed by calling this same method again with a different key.
         """
-        if not isinstance(key, RSAkey):    # check if the input is a valid key
+        if not isinstance(key, RSAkey):     # check if the input is a valid key
             raise ValueError("Invalid input for add_key, expected a TinyRSA_key object.")
-        self.key = key
+        self.key = key                      # set the attribute
+
+    def encrypt(self):
+        """
+        This method will encrypt the plain text with the key and put the result in he cipher attribute.
+        """
+        bit_length = self.key.get_bitlength()   # get the bitlength of the key
+        if bit_length==None:                    # if it is None then the key is not set
+            print("Couldn't encrypt, the key is empty.")
+        else:
+            # find a way to split the plain text in blocks to match the length of the key
+            blocks = None
 
 if __name__ == '__main__':
     msg = RSA_message()
