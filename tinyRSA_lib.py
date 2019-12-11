@@ -64,20 +64,22 @@ def is_prime_fast(n):
         while (n-1)%pow(2, s+1)==0: # we want to check for the max value of r
             s+=1
         d=(n-1)//pow(2, s)          # d is obtained by a simple division
-        a=random.randint(2, n-1)    # if n is prime then a^d=1(mod n) or a^(d*2^r)=-1(mod n) for some 0<=r<=s-1
-                                    # if we can verify this for all values of a then n is likely to be prime (but not necessarily)
-        witness=pow(a, d, n)
-        if (witness==1 or witness==n-1):
-            return(True)            # The probability that n is prime is reasonable
-                                    # n is not necessarily prime though
-                                    # to increase the probability we should go though this check for multiple values of a
-        else:
-            for j in range(s-1):    # we have to check if a^(d*2^r)=-1(mod n) for some 0<=r<=s-1 (in which case n is probably prime)
-                witness=pow(witness, 2, n)
-                if (witness==n-1):
-                    return(True)
-            return(False)           # otherwise we know for sure that n is composite
-            # If it never got out of the loop then it mean that it never found a root in the Z/nZ among the possible witnesses so we return False
+
+        # Prepare for multiple loops on a
+        for i in range(10): # do 10 passes in the loop
+
+            a=random.randint(2, n-1)    # if n is prime then a^d=1(mod n) or a^(d*2^r)=-1(mod n) for some 0<=r<=s-1
+                                        # if we can verify this for all values of a then n is likely to be prime (but not necessarily)
+            witness=pow(a, d, n)
+            if not (witness==1 or witness==n-1):
+                for j in range(s-1):    # we have to check if a^(d*2^r)=-1(mod n) for some 0<=r<=s-1 (in which case n is probably prime)
+                    witness=pow(witness, 2, n)
+                    if (witness==n-1):
+                        return(True)
+                return(False)           # otherwise we know for sure that n is composite
+                # If it never got out of the loop then it mean that it never found a root in the Z/nZ among the possible witnesses so we return False
+        # If False never got returned in any pass of the loop then n is very likely to be prime
+        return(True)
 
 # END is_prime_fast FUNCTION
 
@@ -156,7 +158,7 @@ def multiplicative_inverse(a, b):
         q, r = b//a, b%a        # Euclidian division
         m = x-u*q               # sequence of coefficient
         b, a, x, u = a, r, u, m # Update the values for the next iteration
-    if not b==0:                # At this point if b is not 0 then there is no inverse, the inputs are not coprime and there is probably something wrong with the prime number generation step
+    if not b==1:                # At this point if b is not 1 then there is no inverse, the inputs are not coprime and there is probably something wrong with the prime number generation step
         print("Couldn't compute inverse, a and b are probably not coprime")
         raise SystemExit(1)
     if x<0:
@@ -164,3 +166,8 @@ def multiplicative_inverse(a, b):
     return(x)
 
 # END multiplicative_inverse FUNCTION
+
+if __name__ == '__main__':
+    # print(multiplicative_inverse(17, 43))
+    # print(is_prime_fast(11990449251145931745564215483884623262016981102977135227921664818241599323747134700686216463266625884413310564264540932840138433670632832957894634174353833))
+    print(prime_with_bitlength(1024))
