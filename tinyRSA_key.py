@@ -49,12 +49,12 @@ class TinyRSA_key():
         """
         This method prints the attributes of the class.
         """
-        print("TinyRSA_key object")
-        print("\tp = {}".format(self.p))
-        print("\tq = {}".format(self.q))
-        print("\tn = {}".format(self.n))
-        print("\te = {}".format(self.e))
-        print("\td = {}".format(self.d))
+        print("\tTinyRSA_key object")
+        print("\t\tp = {}".format(self.p))
+        print("\t\tq = {}".format(self.q))
+        print("\t\tn = {}".format(self.n))
+        print("\t\te = {}".format(self.e))
+        print("\t\td = {}".format(self.d))
 
     def get_bitlength(self):
         """
@@ -145,6 +145,7 @@ if __name__ == '__main__':
     # key.create_from(9894860519494359018950038983556792265408393497140033513744905498507262928855218137106359097320402290625573912104853924285745036900920274281585921568010061, 9876580085113473574355754319240040199501850357794438624522130614032584982809613627280949286201557526837926805975995131624348084348838642555149459317777077, 17)
     key.display()
     print(key.get_bitlength())
+    print(isinstance(key, TinyRSA_key))
 
 
 # Example of 1024 bits long RSA key
