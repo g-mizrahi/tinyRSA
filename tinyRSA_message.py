@@ -22,7 +22,6 @@
 #       - display               (pretty display of the input)
 
 from tinyRSA_key import TinyRSA_key as RSAkey
-import binascii
 
 class RSA_message():
     """
@@ -59,7 +58,8 @@ class RSA_message():
             raise ValueError("Invalid input for add_plain. Couldn't convert message to str.")
 
         self.plain = plain          # set the plain text
-        self.plain_hex = binascii.hexlify(self.plain.encode('utf-8'))   # set the plein text in hex
+        # self.plain_hex = binascii.hexlify(self.plain.encode('utf-8')).decode()   # set the plain text in hex
+        self.plain_hex = self.plain.encode('utf-8').hex()   # byte string with the hexcodes
 
     def add_cipher(self, cipher):
         """
@@ -67,7 +67,7 @@ class RSA_message():
         This cipher text is intended to be decrypted
         """
         try:                        # make sure the cipher input is a valid hexstring
-            cipher = binascii.unhexlify(cipher)
+            cipher = cipher.decode()
         except:
             raise ValueError("Invalut input for add_cipher, expected a byte string of hexcodes (example b'68656c6c6f' for hello).")
         self.cipher = cipher        # set the attribute
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     msg = RSA_message()
     msg.add_plain("hello")
     msg.add_cipher(b"68656c6c6f68656c6c6f")
-    msg.display()
     key = RSAkey()
     key.create_new()
     msg.add_key(key)
+    msg.display()
