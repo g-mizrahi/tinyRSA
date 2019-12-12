@@ -109,35 +109,41 @@ class RSA_message():
         if bit_length==None:                    # if it is None then the key is not set
             print("Couldn't decrypt, the key is empty.")
         else:
-            blocks = [self.cipher[i:i+bit_length] for i in range(0, len(self.cipher), bit_length)]    # split the message in blocks of size bit_length
-            blocks[-1] = blocks[-1] + '0'*(bit_length-len(blocks[-1]))  # pad the message to have only blocks of length bit_length
+            blocks = [self.cipher[i:i+bit_length] for i in range(0, len(self.cipher), bit_length)]    # split the cipher in blocks of size bit_length
+            blocks[-1] = blocks[-1] + '0'*(bit_length-len(blocks[-1]))  # pad the cipher to have only blocks of length bit_length
 
-            # this next line executes the encryption on each block in multiple steps :
+            # this next line executes the decryption on each block in multiple steps :
             #           convert binary to an integer
             #           perform the modular exponentiation
             #           format the result in binary
             #           pad with leading zeros up to bit_length
             self.plain_bin = ''.join(["{:b}".format(pow(int(blocks[i], 2), self.key.d, self.key.n)).zfill(bit_length) for i in range(len(blocks))])
 
+            # update the value of the plain text by converting the decrypted binary back to ascii
+            #           split the binary in blocks of 8 bits (for each aschii character)
+            #           convert each 8 bits block into its corresponding ascii character
             plains = [self.plain_bin[i:i+8] for i in range(0, len(self.plain_bin), 8)]
             plains[-1] = plains[-1] + '0'*(8-len(plains[-1]))
             self.plain = ''.join([chr(int(plains[i], 2)) for i in range(len(plains))])
 
 if __name__ == "__main__":
+    # Define a message object
     msg = RSA_message()
+    # Add a plain text to it
     msg.add_plain("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
 
+    # Create an RSA key object
     key = RSAkey()
+    # Generate a 2048 bits long key
     key.create_new(1024)
-    
-    # msg.add_cipher("00100110101011110000001100100000")
-    # key.create_from(60223, 50047, 5)
 
+    # Add the key to the message
     msg.add_key(key)
-    # msg.display()
 
+    # Encrypt the message
     msg.encrypt()
-    msg.display()
-
+    # Decrypt the message
     msg.decrypt()
+
+    # Display the results
     msg.display()
