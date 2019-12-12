@@ -34,7 +34,7 @@ class RSA_message():
         The constructor is just to create the class attributes, the plain or cipher texts and the key have to be added with the add_plain, add_cipher and add_key methods.
         """
         self.plain = None
-        self.plain_hex = None
+        self.plain_bin = None   # useful ?
         self.cipher = None
         self.key = RSAkey()     # creates an empty RSA key
 
@@ -43,9 +43,10 @@ class RSA_message():
         This method displays the attributes of the class
         """
         print("plain text = {}\n".format(self.plain))
-        print("plain hex = {}\n".format(self.plain_hex))
+        print("plain bin = {}\n".format(self.plain_bin))
         print("cipher text = {}\n".format(self.cipher))
         self.key.display()
+        print("")
 
     def add_plain(self, plain):
         """
@@ -59,17 +60,18 @@ class RSA_message():
 
         self.plain = plain          # set the plain text
         # self.plain_hex = binascii.hexlify(self.plain.encode('utf-8')).decode()   # set the plain text in hex
-        self.plain_hex = self.plain.encode('utf-8').hex()   # byte string with the hexcodes
+        # self.plain_hex = self.plain.encode('utf-8').hex()   # byte string with the hexcodes
+        self.plain_bin = ''.join('{:08b}'.format(ord(c)) for c in self.plain)
 
     def add_cipher(self, cipher):
         """
-        This method allows to add a cipher text from a hex string
+        This method allows to add a cipher text from a binary string (string of 0 and 1)
         This cipher text is intended to be decrypted
         """
-        try:                        # make sure the cipher input is a valid hexstring
-            cipher = cipher.decode()
+        try:                        # make sure the cipher input is a valid binary string
+            int(cipher, 2)
         except:
-            raise ValueError("Invalut input for add_cipher, expected a byte string of hexcodes (example b'68656c6c6f' for hello).")
+            raise ValueError("Invalut input for add_cipher, expected a string of 0 and 1 (example '0110100001100101011011000110110001101111' for hello).")
         self.cipher = cipher        # set the attribute
 
     def add_key(self, key):
@@ -89,14 +91,53 @@ class RSA_message():
         if bit_length==None:                    # if it is None then the key is not set
             print("Couldn't encrypt, the key is empty.")
         else:
-            # find a way to split the plain text in blocks to match the length of the key
-            blocks = None
+            blocks = [self.plain_bin[i:i+bit_length] for i in range(0, len(self.plain_bin), bit_length)]    # split the message in blocks of size bit_length
+            blocks[-1] = blocks[-1] + '0'*(bit_length-len(blocks[-1]))    # pad the message to have only blocks of length bit_length. We need to pad to the right to keep the message contiguous
+
+            # this next line executes the encryption on each block in multiple steps :
+            #           convert binary to an integer
+            #           perform the modular exponentiation
+            #           format the result in binary
+            #           pad with leading zeros up to bit_length
+            self.cipher = ''.join(["{:b}".format(pow(int(blocks[i], 2), self.key.e, self.key.n)).zfill(bit_length) for i in range(len(blocks))])
+
+    def decrypt(self):
+        """
+        This method will decrypt the cipher text with the key and put the result in he plain_bin attribute then update the plain
+        """
+        bit_length = self.key.get_bitlength()   # get the bitlength of the key
+        if bit_length==None:                    # if it is None then the key is not set
+            print("Couldn't decrypt, the key is empty.")
+        else:
+            blocks = [self.cipher[i:i+bit_length] for i in range(0, len(self.cipher), bit_length)]    # split the message in blocks of size bit_length
+            blocks[-1] = blocks[-1] + '0'*(bit_length-len(blocks[-1]))  # pad the message to have only blocks of length bit_length
+
+            # this next line executes the encryption on each block in multiple steps :
+            #           convert binary to an integer
+            #           perform the modular exponentiation
+            #           format the result in binary
+            #           pad with leading zeros up to bit_length
+            self.plain_bin = ''.join(["{:b}".format(pow(int(blocks[i], 2), self.key.d, self.key.n)).zfill(bit_length) for i in range(len(blocks))])
+
+            plains = [self.plain_bin[i:i+8] for i in range(0, len(self.plain_bin), 8)]
+            plains[-1] = plains[-1] + '0'*(8-len(plains[-1]))
+            self.plain = ''.join([chr(int(plains[i], 2)) for i in range(len(plains))])
 
 if __name__ == "__main__":
     msg = RSA_message()
-    msg.add_plain("hello")
-    msg.add_cipher(b"68656c6c6f68656c6c6f")
+    msg.add_plain("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+
     key = RSAkey()
-    key.create_new()
+    key.create_new(1024)
+    
+    # msg.add_cipher("00100110101011110000001100100000")
+    # key.create_from(60223, 50047, 5)
+
     msg.add_key(key)
+    # msg.display()
+
+    msg.encrypt()
+    msg.display()
+
+    msg.decrypt()
     msg.display()
