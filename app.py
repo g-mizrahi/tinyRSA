@@ -7,7 +7,10 @@
 # imports for Flask, the Flask db handler and the tinyRSA library
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
-from tinyRSA import *
+
+import tinyRSA_lib as RSAlib
+from tinyRSA_key import TinyRSA_key as RSAkey
+from tinyRSA_message import TinyRSA_message as RSAmessage
 
 # Initialize the app and the database (called rsa)
 app = Flask(__name__)
@@ -16,7 +19,7 @@ db = SQLAlchemy(app)
 
 # Create the database scheme
 
-class RSA_scheme(db.Model):
+class tinyRSA_scheme(db.Model):
     '''
     This class is used to keep track of the keys so a user to encrypt and decrypt with the same key.
     Consider having a feature with accounts and store keys that belong to someone to that they can reuse them.
@@ -26,12 +29,12 @@ class RSA_scheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     p = db.Column(db.String(310), unique=False)
     q = db.Column(db.String(310), unique=False)
-    n = db.Column(db.String(620), unique=False)
+    # n = db.Column(db.String(620), unique=False)
     e = db.Column(db.String(10), unique=False)
-    d = db.Column(db.String(620), unique=False)
+    # d = db.Column(db.String(620), unique=False)
 
     def __repr__(self):
-        return("<id {}\nPublic key {}>".format(self.id, self.n))
+        return("<id {}>".format(self.id))
 
 # The default route, loads the home page
 @app.route('/', methods=['POST','GET'])

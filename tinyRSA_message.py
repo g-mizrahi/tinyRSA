@@ -23,7 +23,7 @@
 
 from tinyRSA_key import TinyRSA_key as RSAkey
 
-class RSA_message():
+class TinyRSA_message():
     """
     This class describes a message fitting for the TinyRSA project.
     Everything is public even private keys as the goal is not to do encryption but to pay around with the RSA scheme.
@@ -61,7 +61,7 @@ class RSA_message():
         self.plain = plain          # set the plain text
         # self.plain_hex = binascii.hexlify(self.plain.encode('utf-8')).decode()   # set the plain text in hex
         # self.plain_hex = self.plain.encode('utf-8').hex()   # byte string with the hexcodes
-        self.plain_bin = ''.join('{:08b}'.format(ord(c)) for c in self.plain)
+        self.plain_bin = '00000000'+''.join('{:08b}'.format(ord(c)) for c in self.plain)    # pad with zeros to make sure the plain text integer representation is smaller than the key
 
     def add_cipher(self, cipher):
         """
@@ -128,14 +128,15 @@ class RSA_message():
 
 if __name__ == "__main__":
     # Define a message object
-    msg = RSA_message()
+    msg = TinyRSA_message()
     # Add a plain text to it
-    msg.add_plain("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    # msg.add_plain("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    msg.add_plain("~"*64)
 
     # Create an RSA key object
     key = RSAkey()
-    # Generate a 2048 bits long key
-    key.create_new(1024)
+    # Generate a key
+    key.create_new(37)
 
     # Add the key to the message
     msg.add_key(key)
