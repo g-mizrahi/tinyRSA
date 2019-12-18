@@ -59,9 +59,7 @@ class TinyRSA_message():
             raise ValueError("Invalid input for add_plain. Couldn't convert message to str.")
 
         self.plain = plain          # set the plain text
-        # self.plain_hex = binascii.hexlify(self.plain.encode('utf-8')).decode()   # set the plain text in hex
-        # self.plain_hex = self.plain.encode('utf-8').hex()   # byte string with the hexcodes
-        self.plain_bin = '00000000'+''.join('{:08b}'.format(ord(c)) for c in self.plain)    # pad with zeros to make sure the plain text integer representation is smaller than the key
+        self.plain_bin = ''.join('{:08b}'.format(ord(c)) for c in self.plain)   # convert the ascii in binary
 
     def add_cipher(self, cipher):
         """
@@ -91,7 +89,7 @@ class TinyRSA_message():
         if bit_length==None:                    # if it is None then the key is not set
             print("Couldn't encrypt, the key is empty.")
         else:
-            blocks = [self.plain_bin[i:i+bit_length] for i in range(0, len(self.plain_bin), bit_length)]    # split the message in blocks of size bit_length
+            blocks = ['0'+self.plain_bin[i:i+bit_length-1] for i in range(0, len(self.plain_bin), bit_length-1)]    # split the message in blocks of size bit_length with a leading zero to make sure the value of the block is smaller than the value of the key
             blocks[-1] = blocks[-1] + '0'*(bit_length-len(blocks[-1]))    # pad the message to have only blocks of length bit_length. We need to pad to the right to keep the message contiguous
 
             # this next line executes the encryption on each block in multiple steps :
@@ -117,7 +115,8 @@ class TinyRSA_message():
             #           perform the modular exponentiation
             #           format the result in binary
             #           pad with leading zeros up to bit_length
-            self.plain_bin = ''.join(["{:b}".format(pow(int(blocks[i], 2), self.key.d, self.key.n)).zfill(bit_length) for i in range(len(blocks))])
+            #           remove one leading zero to go back to the true plaintext (see encrypt method)
+            self.plain_bin = ''.join(["{:b}".format(pow(int(blocks[i], 2), self.key.d, self.key.n)).zfill(bit_length)[1:] for i in range(len(blocks))])
 
             # update the value of the plain text by converting the decrypted binary back to ascii
             #           split the binary in blocks of 8 bits (for each aschii character)
