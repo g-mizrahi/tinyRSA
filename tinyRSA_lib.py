@@ -97,7 +97,7 @@ def prime_with_bitlength(l):
         raise ValueError("Invalid bitlength, it should be an integer strickly greater than 1")
 
     count_passes=0
-    start=int(pow(2,l-1)*(2**0.5))+1    # we want primes larger than start and only odd numbers (hence the +1) multiply by sqrt to make sure the public key is of the expected length
+    start=int(pow(2,l-2)*(2**0.5))*2+1    # we want primes larger than start and only odd numbers (hence the +1) multiply by sqrt to make sure the public key is of the expected length. By doing int(2^(l-2)*sqrt(2))*2+1, we make sure the number is odd
     stop=pow(2,l)                       # but smaller than stop
     p=start
     while not is_prime_fast(p):
