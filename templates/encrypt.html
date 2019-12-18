@@ -6,18 +6,16 @@
 
 {% block body %}
 <!-- Guilhem Mizrahi 11/2019 -->
-<a href="/"><img src="{{ url_for('static', filename='images/home.svg') }}" alt="home" style="width:40px;height:40px;"></a>
 <h1>Encrypt and decrypt a message</h1>
 <div id="crypto">
 <div id="keys">
-  {% if keys|length == 1 %}
-  <span><b>Keys</b><br>For this application, \(p\) and \(q\) are 512 bits long for a 1024 bits long public key \(n\).</span>
+  <span><b>Keys</b><br>For this application, \(p\) and \(q\) are {{keys.get_bitlength()//2}} bits long for a {{keys.get_bitlength()}} bits long public key \(n\).</span>
   <ul>
-    <li>\(p=\){{ keys[0].p }}</li>
-    <li>\(q=\){{ keys[0].q }}</li>
-    <li>\(n=p\times q=\){{ keys[0].n }}</li>
-    <li>\(e=\){{ keys[0].e }}</li>
-    <li>\(d=\){{ keys[0].d }}</li>
+    <li>\(p=\){{ keys.p }}</li>
+    <li>\(q=\){{ keys.q }}</li>
+    <li>\(n=p\times q=\){{ keys.n }}</li>
+    <li>\(e=\){{ keys.e }}</li>
+    <li>\(d=\){{ keys.d }}</li>
   </ul>
   <p>To encrypt, the algorithm goes as follow :</p>
   <ol>
@@ -29,22 +27,17 @@
     <li>Decrypt each block by doing \(m\equiv c^d(mod\ n)\) where \(m\) is the message and \(c\) is the cipher text.</li>
     <li>Reassemble the blocks and turn the numbers into letters using the same scheme as in the encryption process (for example ASCII).</li>
   </ol>
-  {% else %}
-  <p>Something went wrong please go back to the home page</p>
-  {% endif %}
 </div>
 <div id="messages">
-{% if keys|length == 1 %}
 <textarea name="plain" rows="8" cols="50" form="encrypt">{{plain}}</textarea>
-  <form id="encrypt" action="/encrypt/{{keys[0].id}}" method="POST">
+  <form id="encrypt" action="/encrypt/{{ids}}" method="POST">
     <input type="submit" name="encrypt" value="Encrypt">
   </form>
   <p>Keep in mind that RSA encrypts numbers and outputs number that don't necessarily fall into the ASCII range so trying to print them doesn't necessarily make sense.</p>
 <textarea name="cipher" rows="8" cols="50" form="decrypt">{{cipher}}</textarea>
-  <form id="decrypt" action="/decrypt/{{keys[0].id}}" method="POST">
+  <form id="decrypt" action="/decrypt/{{ids}}" method="POST">
     <input type="submit" name="decrypt" value="Decrypt">
   </form>
-{% endif %}
 </div>
 </div>
 {% endblock %}

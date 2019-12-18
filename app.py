@@ -27,10 +27,10 @@ class tinyRSA_scheme(db.Model):
     Consider storing integers as strings and converting with Python
     '''
     id = db.Column(db.Integer, primary_key=True)
-    p = db.Column(db.String(310), unique=False)
-    q = db.Column(db.String(310), unique=False)
+    p = db.Column(db.String(512), unique=False)
+    q = db.Column(db.String(512), unique=False)
     # n = db.Column(db.String(620), unique=False)
-    e = db.Column(db.String(10), unique=False)
+    e = db.Column(db.String(64), unique=False)
     # d = db.Column(db.String(620), unique=False)
 
     def __repr__(self):
@@ -50,39 +50,49 @@ def index():
     TODO
             - Retreive the value of the bitlength from the form
     '''
-    if request.method=='GET':
+    if request.method=='GET':       # If the request is get just serve the home page
         return(render_template("index.html"))
-    elif request.method=='POST':
-        if request.form['generate']:
-
-            bitlength = 512
-
-            # Generating the primes
-            p = choose_prime(bitlength)
-            q = choose_prime(bitlength)
-
-            # Creating the keys
-
-            n = p*q
-
-            lowest_multiple = lcm(p-1, q-1)
-
-            e = choose_exponent(lowest_multiple)    # part of the public key
-            d = inverse(e, lowest_multiple)         # private key
-
-            new_key=RSA_scheme(p=str(p), q=str(q), n=str(n), e=str(e), d=str(d))
-            # return("p={}\nq={}\nn={}\ne={}\nd={}".format(str(p),str(q),str(n),str(e),str(d)))
-            try:
-                db.session.add(new_key)
-                db.session.commit()
-                key=RSA_scheme.query.filter_by(id=str(new_key.id)).all()
-                return(render_template("encrypt.html", keys=key))
-            except:
-                return("Failed at generating the keys")
-        else:
-            return("Bad form")
+    elif request.method=='POST':    # If request is post then execute logic
+        try:                        # Check for validity of key length
+            bitlength = int(request.form["bitlength"])
+            if bitlength<2 or bitlength>1024:
+                return("Invalid bitlength for the key, provide an integer ranging from 2 to 1024")
+            # else:
+            #     return("Bitlength = {}".format(bitlength))
+        except:
+            return("Invalid bitlength for the key, provide an integer ranging from 2 to 1024")
+        # Once here we know the bitlength is valid
+        key = RSAkey()
+        key.create_new(bitlength)
+        new_key=RSA_scheme(p=key.p, q=key.q, e=key.e)
+        try:
+            db.session.add(new_key)
+            db.session.commit()
+            return(render_template("encrypt.html", keys=key, ids=new_key.id))
+        except:
+            return("Failed at generating the keys")
     else:
         return("Bad request")
+    # elif request.method=='POST':
+    #     if request.form['generate']:
+    #         try:
+    #             bitlength = int(request.form['bitlength'])
+    #
+    #             new_key=RSA_scheme(p=str(p), q=str(q), n=str(n), e=str(e), d=str(d))
+    #             # return("p={}\nq={}\nn={}\ne={}\nd={}".format(str(p),str(q),str(n),str(e),str(d)))
+    #             try:
+    #                 db.session.add(new_key)
+    #                 db.session.commit()
+    #                 key=RSA_scheme.query.filter_by(id=str(new_key.id)).all()
+    #                 return(render_template("encrypt.html", keys=key))
+    #             except:
+    #                 return("Failed at generating the keys")
+    #         except:
+    #             return("Wrong bitlength")
+    #     else:
+    #         return("Bad form")
+    # else:
+    #     return("Bad request")
 
 # Endpoint to encrypt the content of the form
 @app.route('/encrypt/<int:id>', methods=['POST'])
@@ -95,25 +105,29 @@ def encrypt(id):
 
     # Perform the encryption algorithm on the plain text
 
-    # Encode the message
-
-    bitlength = 512
-
-    bin_message = encode_message(message, 2*bitlength) # turn the message in binary
-    bin_message_blocks = string_to_blocks(bin_message, 2*bitlength) # generator of blocks
-
-    # Encrypt the message
-
-    e = int(key[0].e)
-    n = int(key[0].n)
-
-    bin_cipher = ""
-    for bin_block in bin_message_blocks:
-        bin_cipher += crypt_block(bin_block, e, n)
-
-    cipher = display_bin_block(bin_cipher)
-    cipher = ascii_to_hex(cipher)
-    return(render_template("encrypt.html", keys=key, cipher=cipher))
+    msg = RSAmessage()
+    msg.add_plain(message)
+    p = key[0].p
+    q = key[0].q
+    e = key[0].e
+    
+    # bitlength = 512
+    #
+    # bin_message = encode_message(message, 2*bitlength) # turn the message in binary
+    # bin_message_blocks = string_to_blocks(bin_message, 2*bitlength) # generator of blocks
+    #
+    # # Encrypt the message
+    #
+    # e = int(key[0].e)
+    # n = int(key[0].n)
+    #
+    # bin_cipher = ""
+    # for bin_block in bin_message_blocks:
+    #     bin_cipher += crypt_block(bin_block, e, n)
+    #
+    # cipher = display_bin_block(bin_cipher)
+    # cipher = ascii_to_hex(cipher)
+    # return(render_template("encrypt.html", keys=key, cipher=cipher))
 
 # Endpoint to decrypt the content of the form
 @app.route('/decrypt/<int:id>', methods=['POST'])
